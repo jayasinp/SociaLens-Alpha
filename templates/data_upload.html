@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Data Upload{% endblock %}
+
+{% block content %}
+<style>
+    .card {
+        border-radius: 10px;
+    }
+</style>
+<h1>Data Upload</h1>
+<div class="upload-form">
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="dataFile" class="form-label">Choose a file to upload (.csv, .xlsx, .xls only)</label>
+            <input type="file" class="form-control" id="dataFile" name="dataFile" required>
+            <button type="submit" class="btn btn-primary mt-3">Upload</button>
+        </div>
+    </form>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+<h2>Uploaded Files</h2>
+<div class="row">
+    {% for file in files %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ file.name }}</h5>
+                <p class="card-text">Size: {{ file.size }}</p>
+                <p class="card-text">Uploaded: {{ file.upload_time }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

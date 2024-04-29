@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}View Statistics - {{ filename }}{% endblock %}
+
+{% block content %}
+<h1>Statistics for {{ filename }}</h1>
+{% if results.get('error') %}
+    <div class="alert alert-danger" role="alert">
+        {{ results.error }}
+    </div>
+{% else %}
+    {% for sheet, stats in results.items() %}
+    <div class="mb-3">
+        <h2>{{ sheet }}</h2>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Measure</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for column, values in stats.items() %}
+                <tr>
+                    <th colspan="2">{{ column }}</th>
+                </tr>
+                {% for stat_name, value in values.items() %}
+                <tr>
+                    <td>{{ stat_name }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}

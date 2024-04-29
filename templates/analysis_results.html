@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results{% endblock %}
+
+{% block content %}
+<h1>Analysis Results for {{ filename }}</h1>
+<label for="sheetSelect">Select a Sheet:</label>
+<select id="sheetSelect" class="form-select mb-3" onchange="showSheet(this.value)">
+    {% for sheet_name in sheet_names %}
+    <option value="{{ sheet_name }}">{{ sheet_name }}</option>
+    {% endfor %}
+</select>
+
+<div id="sheetContainer">
+    {% for sheet_name, table_html in tables_html.items() %}
+    <div id="sheet-{{ sheet_name }}" style="display: none;">
+        {{ table_html|safe }}
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    /* Custom styling for tables */
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa; /* Light background for the sticky header */
+        box-shadow: 0 2px 2px -1px gray; /* Slight shadow for a lifting effect */
+        z-index:2;
+    }
+    .table th, .table td {
+        text-align: left; /* Ensure all table data is left-aligned */
+    }
+</style>
+
+<script>
+document.getElementById('sheetSelect').value = '{{ sheet_names[0] }}';
+document.getElementById('sheet-{{ sheet_names[0] }}').style.display = 'block'; // Show the first sheet by default
+
+function showSheet(sheetName) {
+    // Hide all sheets
+    document.querySelectorAll('[id^="sheet-"]').forEach(div => {
+        div.style.display = 'none';
+    });
+    // Show the selected sheet
+    document.getElementById('sheet-' + sheetName).style.display = 'block';
+}
+</script>
+{% endblock %}

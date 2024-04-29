@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Explore Data{% endblock %}
+
+{% block content %}
+<h1>Explore Data</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form action="{{ url_for('analyze_data') }}" method="post">
+    <div class="mb-3">
+        <label for="selectedFile" class="form-label">Select a file to analyze:</label>
+        <select class="form-select" id="selectedFile" name="selectedFile">
+            {% for file in files %}
+            <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Explore</button>
+</form>
+{% endblock %}
