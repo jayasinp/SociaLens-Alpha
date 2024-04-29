@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Select Dataset and Sheet</h2>
+    <label for="file-select">Choose a dataset:</label>
+    <select id="file-select" name="file-select" onchange="updateSheets()">
+        <option value="">Select a file...</option>
+        {% for file in files %}
+        <option value="{{ file }}">{{ file }}</option>
+        {% endfor %}
+    </select>
+
+    <br><br>
+
+    <label for="sheet-select">Choose a sheet:</label>
+    <select id="sheet-select" name="sheet-select" onchange="showTitle()">
+        <option value="">Select a sheet...</option>
+    </select>
+
+    <h3 id="sheet-title">Sheet title will appear here.</h3>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function updateSheets() {
+    var fileName = $('#file-select').val();
+    if (fileName) {
+        $.ajax({
+            url: '/get-sheets',
+            type: 'POST',
+            data: { filename: fileName },
+            success: function(response) {
+                $('#sheet-select').empty();
+                $('#sheet-select').append('<option value="">Select a sheet...</option>');
+                response.sheets.forEach(function(sheet) {
+                    $('#sheet-select').append('<option value="' + sheet + '">' + sheet + '</option>');
+                });
+            }
+        });
+    }
+}
+
+function showTitle() {
+    var sheetName = $('#sheet-select').val();
+    if (sheetName) {
+        $('#sheet-title').text('Selected Sheet: ' + sheetName);
+    } else {
+        $('#sheet-title').text('Sheet title will appear here.');
+    }
+}
+</script>
+{% endblock %}

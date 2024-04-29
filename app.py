@@ -70,6 +70,28 @@ def home():
     breadcrumbs = [("Home", "/")]
     return render_template('index.html', breadcrumbs=breadcrumbs)
 
+# New route for the Selector page
+@app.route('/selector')
+def selector():
+    breadcrumbs = [("Home", "/"), ("Selector Demo", "/selector")]
+    files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
+    return render_template('selector.html', breadcrumbs=breadcrumbs, files=files)
+
+# ROUTE FOR FILTERING DATASETS BY SHEET
+@app.route('/select-dataset')
+def select_dataset():
+    files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
+    return render_template('selector.html', files=files)
+
+@app.route('/get-sheets', methods=['POST'])
+def get_sheets():
+    filename = request.form['filename']
+    try:
+        xls = pd.ExcelFile(os.path.join('uploads', filename))
+        sheets = xls.sheet_names
+        return jsonify({'sheets': sheets})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 # Route for uploading data files
 @app.route('/data-upload', methods=['GET', 'POST'])
