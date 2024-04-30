@@ -3,6 +3,7 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
+<div class="main-content-container"> 
 <h1>Settings</h1>
 <div class="container">
   <form id="settingsForm" onsubmit="saveSettings()">
@@ -51,4 +52,5 @@
     loadSettings();
   };
 </script>
+</div>
 {% endblock %}

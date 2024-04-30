@@ -11,6 +11,8 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Required to use flash messages
 
 # Set the path for the uploads folder
+# Uploads folder is used to collect scraped data
+# Uploads folder is used to receive cleaned data
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -22,8 +24,33 @@ JSON_EXTENSIONS = {'json'}
 app.config['JSON_FOLDER'] = JSON_FOLDER
 os.makedirs(JSON_FOLDER, exist_ok=True)
 
+
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# NAVIGATION ROUTES
+# go to home page
+@app.route('/')
+def home():
+    breadcrumbs = [("Home", "/")]
+    return render_template('index.html', breadcrumbs=breadcrumbs)
+
+# New route for the Selector demo page - will be removed later
+@app.route('/selector')
+def selector():
+    breadcrumbs = [("Home", "/"), ("Selector Demo", "/selector")]
+    files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
+    return render_template('selector.html', breadcrumbs=breadcrumbs, files=files)
+
+@app.route('/data-scraper')
+def data_scraper():
+    breadcrumbs = [("Home", "/"), ("Data Scraper", "/data-scraper")]
+    return render_template('data_scraper.html', breadcrumbs=breadcrumbs)
+
+@app.route('/data-cleaner')
+def data_cleaner():
+    breadcrumbs = [("Home", "/"), ("Data Cleaner", "/data-cleaner")]
+    return render_template('data_cleaner.html', breadcrumbs=breadcrumbs)
 
 # Function to convert statistical results to JSON format
 def create_json_graph(file_path):
@@ -65,17 +92,19 @@ def create_json_graph(file_path):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/')
-def home():
-    breadcrumbs = [("Home", "/")]
-    return render_template('index.html', breadcrumbs=breadcrumbs)
+# NETWORK STATISTICS NAVIGATION ROUTE
+@app.route('/network-statistics')
+def network_statistics():
+    breadcrumbs = [("Home", "/"), ("Select Dataset for Network Statistics", "/network-statistics")]
+    
+    # Retrieve and Filter files
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    files = [f for f in files if allowed_file(f)]  # Assuming you have 'allowed_file'
 
-# New route for the Selector page
-@app.route('/selector')
-def selector():
-    breadcrumbs = [("Home", "/"), ("Selector Demo", "/selector")]
-    files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
-    return render_template('selector.html', breadcrumbs=breadcrumbs, files=files)
+    print("Files in Uploads Folder:", files)  # Debugging line
+
+    return render_template('network_statistics.html', breadcrumbs=breadcrumbs, files=files)
+
 
 # ROUTE FOR FILTERING DATASETS BY SHEET
 @app.route('/select-dataset')
@@ -97,25 +126,38 @@ def get_sheets():
 @app.route('/data-upload', methods=['GET', 'POST'])
 def data_upload():
     breadcrumbs = [("Home", "/"), ("Data Upload", "/data-upload")]
-    files_info = []
 
     if request.method == 'POST':
         file = request.files['dataFile']
-        if file and allowed_file(file.filename):
+        if file and allowed_file(file.filename):  # Make sure you have an 'allowed_file' function
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
-            
-            
-            # Update files info
+
+            flash('File uploaded successfully!', 'success')
+
+            # Update files info immediately
             files = os.listdir(app.config['UPLOAD_FOLDER'])
             files_info = [{
-                 'name': file,
-                 'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
-                 'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+                'name': file,
+                'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
+                'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
             } for file in files]
 
+            return redirect(url_for('data_upload'))  # Redirect to refresh the page
+        else:
+            flash('Invalid file type. Please upload .csv, .xlsx, or .xls files only.', 'danger')
+
+    # Retrieve file information for displaying existing uploads
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    files_info = [{
+        'name': file,
+        'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
+        'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+    } for file in files]
+
     return render_template('data_upload.html', breadcrumbs=breadcrumbs, files=files_info)
+
 
 
 @app.route('/datasets')
@@ -133,7 +175,7 @@ def datasets():
 
 @app.route('/explore-data')
 def explore_data():
-    breadcrumbs = [("Home", "/"), ("Explore Data", "/explore-data")]
+    breadcrumbs = [("Home", "/"), ("Choose Dataset to Explore", "/explore-data")]
     files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
     if not files:
         flash("No uploaded files found. Please upload a file first.", 'danger')
@@ -149,7 +191,7 @@ def analyze_data():
         flash("File does not exist.", 'danger')
         return redirect(url_for('explore_data'))
 
-    breadcrumbs = [("Home", "/"), ("Explore Data", "/explore-data"), ("Analyze Data", "/analyze-data")]
+    breadcrumbs = [("Home", "/"), ("Choose Dataset to Explore", "/explore-data"), ("Explore Data", "/analyze-data")]
 
     try:
         # Check the file extension and read accordingly

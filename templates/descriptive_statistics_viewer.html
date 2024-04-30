@@ -3,6 +3,8 @@
 {% block title %}Descriptive Statistics Viewer{% endblock %}
 
 {% block content %}
+<div class="main-content-container">
+
 <h1>Select a Dataset for Analysis</h1>
 <div class="list-group">
     {% for file in files %}
@@ -10,5 +12,6 @@
         {{ file }}
     </a>
     {% endfor %}
+</div>
 </div>
 {% endblock %}
