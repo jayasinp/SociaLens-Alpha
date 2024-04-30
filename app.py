@@ -22,6 +22,12 @@ JSON_EXTENSIONS = {'json'}
 app.config['JSON_FOLDER'] = JSON_FOLDER
 os.makedirs(JSON_FOLDER, exist_ok=True)
 
+# Set the path for the network data folder
+NETWORK_FOLDER = 'network_objects'
+NETWORK_EXTENSIONS = {'json'}
+app.config['NETWORK_FOLDER'] = NETWORK_FOLDER
+os.makedirs(NETWORK_FOLDER, exist_ok=True)
+
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -234,8 +240,30 @@ def analyze(filename):
 
 @app.route('/network-visualiser')
 def network_visualiser():
+    file_path = os.path.join(app.config['JSON_FOLDER']) 
+    if not os.path.exists(file_path):
+        flash("File does not exist.", 'danger')
     breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
-    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs)
+    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, file_path=file_path)
+
+# Route for listing Network JSON files
+@app.route('/list_network_files', methods=['GET'])
+def list_network_files():
+    files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')]
+    return jsonify(files)
+
+# Route for getting Network data
+@app.route('/get_network_json_data/<filename>', methods=['GET'])
+def get_network_json_data(filename):
+    network_json_file_path = os.path.join(app.config['NETWORK_FOLDER'], filename)
+    
+    if not os.path.exists(network_json_file_path):
+        return jsonify({'error': 'File not found'}), 404
+    
+    with open(network_json_file_path, 'r') as file:
+        data = json.load(file)
+        
+    return jsonify(data)
 
 @app.route('/report-generator')
 def report_generator():
