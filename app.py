@@ -7,6 +7,7 @@ from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file  
 
+
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Required to use flash messages
 
@@ -193,8 +194,8 @@ def list_files():
 
 # Route for getting JSON data
 @app.route('/get_json_data/<filename>', methods=['GET'])
-def get_json_data(filename):
-    json_file_path = os.path.join(app.config['JSON_FOLDER'], filename)
+def get_json_data(selected_network_file):
+    json_file_path = os.path.join(app.config['JSON_FOLDER'], selected_network_file)
     
     if not os.path.exists(json_file_path):
         return jsonify({'error': 'File not found'}), 404
@@ -238,18 +239,65 @@ def analyze(filename):
     results = analyze_file(file_path)
     return render_template('view_statistics.html', filename=filename, results=results, breadcrumbs=breadcrumbs)
 
-@app.route('/network-visualiser')
+
+# Function to convert Excel and CSV files to JSON
+def convert_network_to_json(file_path):
+    # Check file type
+    file_extension = os.path.splitext(file_path)[1].lower()
+    
+    if file_extension in ['.xlsx', '.xls']:
+        df = pd.read_excel(file_path)  # Read Excel file
+    elif file_extension == '.csv':
+        df = pd.read_csv(file_path)  # Read CSV file
+    else:
+        print("Unsupported file format:", file_extension)
+        return
+    
+    # Extract links data from the dataframe
+    if 'Source' in df.columns and 'Target' in df.columns:
+        links_data = df[['Source', 'Target']].to_dict(orient='records')
+        
+        # Prepare nodes data by extracting unique values from 'source' and 'target' columns
+        nodes_data = list(set(df['Source'].tolist() + df['Target'].tolist()))
+        
+        # Prepare the JSON object
+        json_data = {"nodes": nodes_data, "links": links_data}
+        
+        # Write JSON to file
+        json_file_path = os.path.join('network_objects', os.path.splitext(os.path.basename(file_path))[0] + '.json')
+        with open(json_file_path, 'w') as json_file:
+            json.dump(json_data, json_file, indent=4)
+        
+        print("Conversion successful. JSON file saved at:", json_file_path)
+    else:
+        print("Columns 'source' and 'target' not found in the dataframe.")
+
+
+@app.route('/network-visualiser', methods=['GET', 'POST']) #Declan - Added this
 def network_visualiser():
-    file_path = os.path.join(app.config['JSON_FOLDER']) 
+    selected_filename = request.form.get('selectedFile')
+    file_path = os.path.join(app.config['NETWORK_FOLDER'], selected_filename) 
     if not os.path.exists(file_path):
         flash("File does not exist.", 'danger')
+        return redirect(url_for('network-creator-files'))
     breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
-    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, file_path=file_path)
+    files = [f for f in os.listdir(app.config['NETWORK_FOLDER'])]
+    if not files:
+        flash("No uploaded files found. Please upload a file first.", 'danger')
+        return render_template('network_creator.html', files=files, breadcrumbs=breadcrumbs, error_message="No uploaded files found.")
+    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, filename=selected_filename)
+
+# Route for network creator/selector
+@app.route('/network-creator-files', methods=['GET'])
+def network_creator_files():
+    breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
+    files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')] 
+    return render_template('network_creator.html', breadcrumbs=breadcrumbs, files=files)
 
 # Route for listing Network JSON files
 @app.route('/list_network_files', methods=['GET'])
 def list_network_files():
-    files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')]
+    files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')] 
     return jsonify(files)
 
 # Route for getting Network data

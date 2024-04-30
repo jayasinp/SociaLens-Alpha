@@ -114,22 +114,30 @@
     
                         // Determine the maximum value to set the y-axis limit
                         var maxY = Math.max(...flattenedData);
+                        var maxX = d3.max(flattenedData);
                         var yLimit = maxY > 0.1 ? 0.15 : 0.5;
-    
+
                         // Define scales
                         var margin = {top: 30, right: 30, bottom: 50, left: 50},
                             width = 500 - margin.left - margin.right,
                             height = 250 - margin.top - margin.bottom;
                           
-    
                         var xScale = d3.scaleLinear()
-                                       .domain([-10, 10])
-                                       .range([0, width]);
+                                       .domain([0, maxX])
+                                       .range([0, width])
+                                       .nice();
     
+                        // Define kernel density estimator for normal distribution
+                        var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
+                        var density = kde(flattenedData);
+                        var maxDensity = d3.max(density.map(d => d[1]));
+
+
                         var yScale = d3.scaleLinear()
-                                       .domain([0, 0.30])
+                                       .domain([0, maxDensity])
                                        .range([height, 0]);
     
+
                         // Set up SVG for the current column
                         var svg = d3.select("#visualization-{{ sheet_name|replace(' ', '_') }}")
                                     .append("div")
@@ -148,9 +156,7 @@
                             .attr("font-size", "20px")
                             .text(sheetName + ' - ' + metric);
     
-                        // Define kernel density estimator for normal distribution
-                        var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
-                        var density = kde(flattenedData);
+                        
     
                         // Draw KDE line
                         var line = d3.line()
@@ -185,6 +191,17 @@
                            .attr("dy", "1em")
                            .style("text-anchor", "middle")
                            .text("Density");
+
+                        // Draw a line for the mean
+                        var draw_mode = d3.mode(flattenedData);
+                        svg.append("line")
+                            .attr("x1", xScale(draw_mode)) 
+                            .attr("y1", 0) 
+                            .attr("x2", xScale(draw_mode)) 
+                            .attr("y2", height) 
+                            .attr("stroke", "red") // Color of the line
+                            .attr("stroke-width", 2) // Thickness of the line
+                            .attr("opacity", 0.7); // Opacity of the line
                     });
     
                 });

@@ -31,8 +31,8 @@ tooltip_out = function() {
     .scaleExtent([0.5, 10]) // Set the zoom scale extent
     .on("zoom", zoomed);
 // Set up SVG dimensions
-const width = 800;
-const height = 800;
+const width = window.innerWidth*0.8;
+const height = window.innerHeight*0.8;
 // Append the SVG object to the container and apply zoom behavior
   var svg = d3.select("#network")
     .attr('width', width)
@@ -41,8 +41,8 @@ const height = 800;
     .append("g");
 
 // Fetch the list of filenames
-d3.json("/list_network_files").then(function(files) {
-        // Iterate over each filename and fetch its data
+d3.json("/list_network_files").then(function(files) {//
+        // Iterate over each filename and fetch its data TODO: change this so that it only fetches the data for the selected file
         files.forEach(function(filename) {
             d3.json(`/get_network_json_data/${filename}`).then(function(data) {    
 
