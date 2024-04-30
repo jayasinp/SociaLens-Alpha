@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file  
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='templates/static')
 app.secret_key = 'supersecretkey'  # Required to use flash messages
 
 # Set the path for the uploads folder
