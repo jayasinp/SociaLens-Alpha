@@ -96,14 +96,9 @@ def allowed_file(filename):
 @app.route('/network-statistics')
 def network_statistics():
     breadcrumbs = [("Home", "/"), ("Select Dataset for Network Statistics", "/network-statistics")]
-    
-    # Retrieve and Filter files
-    files = os.listdir(app.config['UPLOAD_FOLDER'])
-    files = [f for f in files if allowed_file(f)]  # Assuming you have 'allowed_file'
 
-    print("Files in Uploads Folder:", files)  # Debugging line
+    return render_template('network_statistics.html', breadcrumbs=breadcrumbs)
 
-    return render_template('network_statistics.html', breadcrumbs=breadcrumbs, files=files)
 
 
 # ROUTE FOR FILTERING DATASETS BY SHEET

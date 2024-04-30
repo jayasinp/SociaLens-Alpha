@@ -11,7 +11,7 @@
             height: 100%;
             margin: 0;
         }
-    
+        /* LIGHT MODE */
         .main-content-container {
             padding-top: 60px; 
             background-color: #fff; /* Change background to white */
@@ -179,6 +179,89 @@
                 padding: 20px;
                 border-radius: 5px;
             }
+            body, html {
+    height: 100%;
+    margin: 0;
+}
+
+            /* DARK MODE */
+            body.dark-mode, body.dark-mode html {
+                background-color: #191b28; /* Deep dark background */
+                color: #d4d7dc; /* Softer, neutral light text */
+            }
+
+            body.dark-mode .main-content-container {
+                background-color: #202336; /* Slightly lighter content background */
+            }
+
+            body.dark-mode .top-bar {
+                background-color: #1e2030; /* Slightly darker top bar */
+                border-bottom: 1px solid #262a40; /* Subtler border */
+            }
+
+            body.dark-mode .sidebar {
+                background: #23263c; 
+                border-right: 1px solid #262a40;
+            }
+
+            body.dark-mode .header-title { 
+                color: #e8ebf2; /* Slightly muted default text */
+            }
+
+            body.dark-mode .header-title span.lens { 
+                color: #6caee0; /* Softer 'Lens' blue */  
+            }
+
+            body.dark-mode .header-title span.version {
+                color: #e16a7a; /* Softer version number color */
+            } 
+
+            body.dark-mode .sidebar h3 {
+            color: #d4d7dc; /* Match regular text color in dark mode */
+            }
+
+            body.dark-mode .nav-link {
+                color: #bbc0cc; /* Slightly grayer unselected links */
+            }
+
+            body.dark-mode .nav-link:hover, 
+            body.dark-mode .active .nav-link {
+                background-color: #6caee0; /* Same blue for hover/active */
+                color: #191b28; /* Very dark text on hover */
+            }
+
+            body.dark-mode .content {
+                background: #202336; 
+            }
+
+            body.dark-mode label.check span {
+                border-color: #6caee0; /* Blue border in dark mode */
+                color: #6caee0;
+            }
+
+            body.dark-mode label.check input:checked + span {
+                background-color: #6caee0; /* Blue background on selection */
+                color: #191b28; /* Very dark text on selection */
+            }
+
+            body.dark-mode .card {
+                background-color: #282c45;
+                border-color: #303654;
+            }
+
+            body.dark-mode .breadcrumbs { 
+                color: #a6abb8; /* Less bright breadcrumbs */
+            }
+
+            body.dark-mode .breadcrumbs a {
+                color: #a6abb8; 
+            }
+
+            body.dark-mode .file-explorer { 
+                background-color: #1e2030;  /* Slightly darker file explorer */
+                border-color: #262a40; 
+            }
+
     </style>
     
 </head>
@@ -193,6 +276,15 @@
             {% if not loop.last %} &gt; {% endif %}
         {% endfor %}
     </div>
+    <div class="top-bar d-flex justify-content-between align-items-center" style="height: 60px;"> <h3 class="header-title">
+        Socia<span class="lens">Lens</span> <span class="version">Ɑv.1.71</span> 
+    </h3>
+    <div class="breadcrumbs"> 
+        </div>
+
+    <label class="check"> <input type="checkbox"> 
+        <span>🌙</span> </label>
+</div>
 </div>
 <!--Side menu bar-->
 <div class="wrapper">
@@ -287,5 +379,25 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const themeToggle = document.querySelector('.check input');
+
+    themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark'); // Store preference
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Load the saved theme preference on page load
+    const currentTheme = localStorage.getItem('theme') || 'light'; 
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.checked = true;
+    }
+</script>
 </body>
 </html>

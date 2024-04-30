@@ -2,58 +2,9 @@
 
 {% block content %}
 <div class="main-content-container">
+
+<div class="container">
     <h1>Network Statistics</h1>
-    <p>Please select a dataset to view its network statistics</p>
-
-    <div class="row"> 
-        {% for file in files %}
-        <div class="col-md-4 mb-3"> 
-            <div class="card" data-filename="{{ file }}"> <div class="card-body">
-                    <h5 class="card-title">{{ file }}</h5>
-                    <div class="sheet-list" style="display: none;"> 
-                        </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
 </div>
-
-<script>
-    const cards = document.querySelectorAll('.card'); 
-    cards.forEach(card => {
-        card.addEventListener('click', () => {
-            const filename = card.dataset.filename; 
-            const sheetList = card.querySelector('.sheet-list'); 
-
-            // Fetch sheet names from the server
-            fetch(`/get-sheets`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ filename: filename })  
-                })
-                .then(response => response.json())
-                .then(data => {
-                    sheetList.innerHTML = ''; // Clear previous contents
-                    if (data.sheets) {
-                        let list = document.createElement('ul');
-                        data.sheets.forEach(sheet => {
-                            let item = document.createElement('li');
-                            item.textContent = sheet;
-                            list.appendChild(item);
-                        });
-                        sheetList.appendChild(list);
-                    } else {
-                        sheetList.textContent = 'No sheets found in this file.';
-                    }
-                    sheetList.style.display = 'block'; // Show the list 
-                })
-                .catch(error => {
-                    sheetList.textContent = 'Error fetching sheet names.';
-                    console.error(error);
-                });
-        });
-    });
-</script>
-
+</div>
 {% endblock %}
