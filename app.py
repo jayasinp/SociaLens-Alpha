@@ -194,8 +194,8 @@ def list_files():
 
 # Route for getting JSON data
 @app.route('/get_json_data/<filename>', methods=['GET'])
-def get_json_data(selected_network_file):
-    json_file_path = os.path.join(app.config['JSON_FOLDER'], selected_network_file)
+def get_json_data(filename):
+    json_file_path = os.path.join(app.config['JSON_FOLDER'], filename)
     
     if not os.path.exists(json_file_path):
         return jsonify({'error': 'File not found'}), 404
@@ -240,7 +240,7 @@ def analyze(filename):
     return render_template('view_statistics.html', filename=filename, results=results, breadcrumbs=breadcrumbs)
 
 
-# Function to convert Excel and CSV files to JSON
+# Declan: Function to convert Excel and CSV files to JSON - This is not neccessary if networks can be saved from networkx graph data in networkx_graphobject.py
 def convert_network_to_json(file_path):
     # Check file type
     file_extension = os.path.splitext(file_path)[1].lower()
@@ -275,17 +275,14 @@ def convert_network_to_json(file_path):
 
 @app.route('/network-visualiser', methods=['GET', 'POST']) #Declan - Added this
 def network_visualiser():
-    selected_filename = request.form.get('selectedFile')
+    if request.method=='POST':
+        selected_filename = request.form.get('selectedFile')
+    breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
     file_path = os.path.join(app.config['NETWORK_FOLDER'], selected_filename) 
     if not os.path.exists(file_path):
         flash("File does not exist.", 'danger')
         return redirect(url_for('network-creator-files'))
-    breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
-    files = [f for f in os.listdir(app.config['NETWORK_FOLDER'])]
-    if not files:
-        flash("No uploaded files found. Please upload a file first.", 'danger')
-        return render_template('network_creator.html', files=files, breadcrumbs=breadcrumbs, error_message="No uploaded files found.")
-    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, filename=selected_filename)
+    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, selected_filename=selected_filename, file_path=file_path)
 
 # Route for network creator/selector
 @app.route('/network-creator-files', methods=['GET'])
@@ -294,11 +291,6 @@ def network_creator_files():
     files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')] 
     return render_template('network_creator.html', breadcrumbs=breadcrumbs, files=files)
 
-# Route for listing Network JSON files
-@app.route('/list_network_files', methods=['GET'])
-def list_network_files():
-    files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')] 
-    return jsonify(files)
 
 # Route for getting Network data
 @app.route('/get_network_json_data/<filename>', methods=['GET'])

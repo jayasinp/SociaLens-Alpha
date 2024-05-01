@@ -40,12 +40,10 @@ const height = window.innerHeight*0.8;
     .call(zoom)
     .append("g");
 
-// Fetch the list of filenames
-d3.json("/list_network_files").then(function(files) {//
-        // Iterate over each filename and fetch its data TODO: change this so that it only fetches the data for the selected file
-        files.forEach(function(filename) {
-            d3.json(`/get_network_json_data/${filename}`).then(function(data) {    
+// Fetch the selected filename
+const selectedFilename = "{{ selected_filename }}";
 
+            d3.json(`/get_network_json_data/${selectedFilename}`).then(function(data) {    
                 // Create force simulation
                 const simulation = d3.forceSimulation(data.nodes)
                     .force('link', d3.forceLink(data.links).id(d => d.id))
@@ -59,6 +57,8 @@ d3.json("/list_network_files").then(function(files) {//
                     .attr('class', 'link')
                     .style('stroke', '#999')
                     .style('stroke-opacity', 0.8);
+                
+                var color = d3.scaleOrdinal(d3.schemeCategory10);
 
                 // Create nodes
                 const node = svg.selectAll('.node')
@@ -66,7 +66,8 @@ d3.json("/list_network_files").then(function(files) {//
                     .enter().append('circle')
                     .attr('class', 'node')
                     .attr('r', 7)
-                    .attr('fill', 'blue')
+                    //.attr('fill', 'blue')
+                    .style("fill", function (d) { return color(d.group); })
                     .call(drag(simulation))
                     .on("mouseover", tooltip_in) // when the mouse hovers a node, call the tooltip_in function to create the tooltip
                     .on("mouseout", tooltip_out); // when the mouse stops hovering a node, call the tooltip_out function to get rid of the tooltip //https://observablehq.com/@mkane2/force-directed-graph-with-tooltip;
@@ -120,8 +121,7 @@ d3.json("/list_network_files").then(function(files) {//
                         .attr('cy', d => d.y);
                 });
             });
-        });
-    });
+
 
 // Zoomed function to update SVG transform
 function zoomed(event) {

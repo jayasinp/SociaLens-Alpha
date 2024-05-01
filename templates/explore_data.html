@@ -13,7 +13,7 @@
     {% endif %}
 {% endwith %}
 
-<form action="{{ url_for('network_visualiser') }}" method="post">
+<form action="{{ url_for('analyze_data') }}" method="post">
     <div class="mb-3">
         <label for="selectedFile" class="form-label">Select a file to analyze:</label>
         <select class="form-select" id="selectedFile" name="selectedFile">
