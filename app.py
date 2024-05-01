@@ -2,10 +2,12 @@ from flask import Flask, jsonify, send_from_directory
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.utils import secure_filename
 import os
+import numpy as np
 import json
 from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file  
+
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Required to use flash messages
@@ -24,6 +26,7 @@ os.makedirs(JSON_FOLDER, exist_ok=True)
 
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 # Function to convert statistical results to JSON format
 def create_json_graph(file_path):
@@ -92,6 +95,31 @@ def get_sheets():
         return jsonify({'sheets': sheets})
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+@app.route('/get-statistics', methods=['POST'])
+def get_statistics():
+    try:
+        # Extract filename and sheetname from the request
+        filename = request.form['filename']
+        sheetname = request.form['sheetname']
+        
+        # Analyze the file and get statistics for the specified sheet
+        file_path = os.path.join('uploads', filename)
+        stats = analyze_file(file_path)[sheetname]
+
+        # Convert int64 values to native Python int
+        for column, values in stats.items():
+            for key, value in values.items():
+                if isinstance(value, pd.Int64Dtype.type):
+                    stats[column][key] = int(value)
+
+        return jsonify({'statistics': stats})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+
+
+
 
 # Route for uploading data files
 @app.route('/data-upload', methods=['GET', 'POST'])
@@ -196,7 +224,8 @@ def get_json_data(filename):
     with open(json_file_path, 'r') as file:
         data = json.load(file)
         
-    return jsonify(data)
+    return jsonify(data)  
+    
 
 # Route for descriptive statistics
 @app.route('/descriptive-statistics')

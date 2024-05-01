@@ -1,27 +1,56 @@
 {% extends "base.html" %}
 
 {% block content %}
+<head>
+
+    <!-- CSS styles -->
+
+   <style>
+
+       .table-bordered thead .custom-th {
+           padding-left: 2px;
+           padding-right: 2px;
+           text-align: center;
+           background: #013B7A;
+           color: white;
+       }
+       .graph-container {
+       margin-bottom: 20px;
+       border: 1px solid #ccc;
+   }
+   </style>
+</head>
 <div class="container">
     <h2>Select Dataset and Sheet</h2>
-    <label for="file-select">Choose a dataset:</label>
-    <select id="file-select" name="file-select" onchange="updateSheets()">
-        <option value="">Select a file...</option>
-        {% for file in files %}
-        <option value="{{ file }}">{{ file }}</option>
-        {% endfor %}
-    </select>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="file-select" class="form-label fw-bold">Choose a dataset:</label>
+            <select id="file-select" name="file-select" class="form-select" onchange="updateSheets()">
+                <option value="">Select a file...</option>
+                {% for file in files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="sheet-select" class="form-label fw-bold">Choose a sheet:</label>
+            <select id="sheet-select" name="sheet-select" class="form-select" onchange="showTable();">
+                <option value="">Select a sheet...</option>
+            </select>
+        </div>
+    </div>
+</div>
 
-    <br><br>
+    <div id="statistics-table">
+        <!-- Table will be displayed here -->
+    </div>
+    <!-- Visualization section -->
+<div id="visualization"></div>
 
-    <label for="sheet-select">Choose a sheet:</label>
-    <select id="sheet-select" name="sheet-select" onchange="showTitle()">
-        <option value="">Select a sheet...</option>
-    </select>
-
-    <h3 id="sheet-title">Sheet title will appear here.</h3>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
 function updateSheets() {
     var fileName = $('#file-select').val();
@@ -41,13 +70,209 @@ function updateSheets() {
     }
 }
 
-function showTitle() {
+function showTable() {
+    var fileName = $('#file-select').val();
     var sheetName = $('#sheet-select').val();
-    if (sheetName) {
-        $('#sheet-title').text('Selected Sheet: ' + sheetName);
-    } else {
-        $('#sheet-title').text('Sheet title will appear here.');
+    if (fileName && sheetName) {
+        $.ajax({
+            url: '/get-statistics',
+            type: 'POST',
+            data: { filename: fileName, sheetname: sheetName },
+            success: function(response) {
+                console.log("Response received:", response);
+                var tableHtml = '<h2>Statistics Summary</h2>';
+                tableHtml += '<h3>' + fileName + '</h3>';
+                tableHtml += '<h4>' + sheetName + '</h4>';
+                tableHtml += '<table class="table table-bordered table-hover">';
+                tableHtml += '<thead>';
+                tableHtml += '<tr class="bg-royalblue text-white">';
+                tableHtml += '<th class="col-1 custom-th">Column</th>';
+                tableHtml += '<th class="col-1 custom-th">Mean</th>';
+                tableHtml += '<th class="col-1 custom-th">Median</th>';
+                tableHtml += '<th class="col-1 custom-th">Mode</th>';
+                tableHtml += '<th class="col-1 custom-th">Standard Deviation</th>';
+                tableHtml += '<th class="col-1 custom-th">Variance</th>';
+                tableHtml += '<th class="col-1 custom-th">Skewness</th>';
+                tableHtml += '<th class="col-1 custom-th">Kurtosis</th>';
+                tableHtml += '</tr>';
+                tableHtml += '</thead>';
+                tableHtml += '<tbody>';
+                $.each(response.statistics, function(column, stats) {
+                    console.log("Column:", column, "Stats:", stats);
+                    tableHtml += '<tr>';
+                    tableHtml += '<td class="col-1">' + column + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Mean'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Median'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + (Array.isArray(stats['Mode']) ? stats['Mode'].join(", ") : stats['Mode']) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Standard Deviation'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Variance'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Skewness'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Kurtosis'].toFixed(2) + '</td>';
+                    tableHtml += '</tr>';
+                });
+                tableHtml += '</tbody>';
+                tableHtml += '</table>';
+                $('#statistics-table').html(tableHtml);
+                // Call the updateVisualization function after updating the table
+                 updateVisualization();
+
+            }
+        });
+    }
+    else {
+        $('#statistics-table').empty();
     }
 }
+
+function updateVisualization(){
+
+    
+    // Get the element with id "visualization"
+    var visualizationElement = document.getElementById("visualization");
+            // Set its innerHTML to the message
+     visualizationElement.innerHTML = "This is a message printed from inside a function.";
+
+     var fileName = $('#file-select').val();
+var sheetName = $('#sheet-select').val();
+
+if (fileName && sheetName) {
+    $(document).ready(function() {
+        console.log("Fetching list of files...");
+        // Fetch the list of filenames
+        $.ajax({
+            url: '/list_files',
+            type: 'GET',
+            success: function(files) {
+                console.log("List of files received:", files);
+                // Iterate over each filename and fetch its data
+                files.forEach(function(filename) {
+                    console.log("Fetching data for file:", filename);
+
+                    $.ajax({
+                        url: `/get_json_data/${filename}`,
+                        type: 'GET',
+                        success: function(data) {
+                            console.log("Data received for file:", filename, data);
+                            // Check if the selected sheet exists in the data
+                            if (sheetName in data) {
+                                console.log("Selected sheet found:", sheetName);
+                                var sheetData = data[sheetName];
+                                Object.keys(sheetData).forEach(function(metric) {
+                                    console.log("Processing metric:", metric);
+                                    var dataPoints = sheetData[metric];
+
+                                    // Extract values for the current metric
+                                    var flattenedData = Object.values(dataPoints).map(d => parseFloat(d)).filter(d => !isNaN(d));
+                                    console.log("Flattened data:", flattenedData);
+                                    // Determine the maximum value to set the y-axis limit
+                                    var maxY = Math.max(...flattenedData);
+                                    var yLimit = maxY > 0.1 ? 0.15 : 0.5;
+                                    console.log("MaxY:", maxY, "YLimit:", yLimit);
+                                    // Define scales
+                                    var margin = {top: 30, right: 30, bottom: 50, left: 50},
+                                        width = 500 - margin.left - margin.right,
+                                        height = 250 - margin.top - margin.bottom;
+                                    console.log("Margin:", margin, "Width:", width, "Height:", height);
+
+                                    var xScale = d3.scaleLinear()
+                                                   .domain([-10, 10])
+                                                   .range([0, width]);
+
+                                    var yScale = d3.scaleLinear()
+                                                   .domain([0, 0.30])
+                                                   .range([height, 0]);
+
+                                    // Set up SVG for the current column
+                                    console.log("Creating SVG for", sheetName);
+                                    var svg = d3.select("#visualization")
+                                                .append("div")
+                                                .attr("class", "graph-container")
+                                                .append("svg")
+                                                .attr("width", width + margin.left + margin.right)
+                                                .attr("height", height + margin.top + margin.bottom)
+                                                .append("g")
+                                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                                    // Add title
+                                    svg.append("text")
+                                        .attr("x", width / 2)
+                                        .attr("y", 0 - (margin.top / 2))
+                                        .attr("text-anchor", "middle")
+                                        .attr("font-size", "20px")
+                                        .text(sheetName + ' - ' + metric);
+
+                                    // Define kernel density estimator for normal distribution
+                                    var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
+                                    var density = kde(flattenedData);
+
+                                    // Draw KDE line
+                                    var line = d3.line()
+                                                 .x(d => xScale(d[0]))
+                                                 .y(d => yScale(d[1]));
+
+                                    svg.append("path")
+                                       .datum(density)
+                                       .attr("fill", "none")
+                                       .attr("stroke", "blue")
+                                       .attr("stroke-width", 2)
+                                       .attr("d", line);
+
+                                    // Draw axes
+                                    svg.append("g")
+                                       .attr("transform", "translate(0," + height + ")")
+                                       .call(d3.axisBottom(xScale).ticks(10));
+
+                                    svg.append("g")
+                                       .call(d3.axisLeft(yScale).ticks(10));
+
+                                    // Add axis labels
+                                    svg.append("text")
+                                       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top) + ")")
+                                       .style("text-anchor", "middle")
+                                       .text("Values");
+
+                                    svg.append("text")
+                                       .attr("transform", "rotate(-90)")
+                                       .attr("y", 0 - margin.left)
+                                       .attr("x", 0 - (height / 2))
+                                       .attr("dy", "1em")
+                                       .style("text-anchor", "middle")
+                                       .text("Density");
+                                });
+                            } else {
+                                console.log("Selected sheet not found:", sheetName);
+                            }
+                        },
+                        error: function(error) {
+                            console.error(`Error fetching data for ${filename}:`, error);
+                        }
+                    });
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching the list of files:', error);
+            }
+        });
+    });
+}
+
+// Kernel density estimation
+function kernelDensityEstimator(kernel, x) {
+    return function(sample) {
+        return x.map(function(x) {
+            return [x, d3.mean(sample, function(v) { return kernel(x - v); })];
+        });
+    };
+}
+
+function kernelGaussian(k) {
+    return function(v) {
+        return Math.exp(-0.5 * v * v) / Math.sqrt(2 * Math.PI);
+    };
+}
+}
+
 </script>
+
+
 {% endblock %}

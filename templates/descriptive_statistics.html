@@ -1,215 +1,278 @@
-<!--priya-->
-<!--24/05/2024-->
-<!--done with connection to the back-end-->
-<!--Able to visualize the data in the form of tables as well as Normal distribution curve-->
-
 {% extends "base.html" %}
-
-{% block title %}Descriptive Statistics{% endblock %}
 
 {% block content %}
 <head>
 
-     <!-- CSS styles -->
+    <!-- CSS styles -->
 
-    <style>
+   <style>
 
-        .table-bordered thead .custom-th {
-            padding-left: 2px;
-            padding-right: 2px;
-            text-align: center;
-            background: #013B7A;
-            color: white;
-        }
-        .graph-container {
-        margin-bottom: 20px;
-        border: 1px solid #ccc;
-    }
-    </style>
+       .table-bordered thead .custom-th {
+           padding-left: 2px;
+           padding-right: 2px;
+           text-align: center;
+           background: #013B7A;
+           color: white;
+       }
+       .graph-container {
+       margin-bottom: 20px;
+       border: 1px solid #ccc;
+   }
+   </style>
 </head>
-<!-- Main heading and file list -->
+<div class="container">
+    <h2>Select Dataset and Sheet</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <label for="file-select" class="form-label fw-bold">Choose a dataset:</label>
+            <select id="file-select" name="file-select" class="form-select" onchange="updateSheets()">
+                <option value="">Select a file...</option>
+                {% for file in files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="sheet-select" class="form-label fw-bold">Choose a sheet:</label>
+            <select id="sheet-select" name="sheet-select" class="form-select" onchange="showTable();">
+                <option value="">Select a sheet...</option>
+            </select>
+        </div>
+    </div>
+</div>
 
-<h1>Descriptive Statistics</h1>
-<ul class="list-group">
-    {% for file in files %}
-    <li class="list-group-item">
-        <a href="{{ url_for('analyze', filename=file) }}">{{ file }}</a>
-    </li>
-    {% endfor %}
-</ul>
-{% if stats %}
+    <div id="statistics-table">
+        <!-- Table will be displayed here -->
+    </div>
+    <!-- Visualization section -->
+<div id="visualization"></div>
 
+</div>
 
-<!-- Display statistics summary -->
-
-<h2>Statistics Summary</h2>
-{% for filename, file_stats in stats.items() %}
-<h3>{{ filename }}</h3>
-{% for sheet_name, sheet_stats in file_stats.items() %}
-    {% if sheet_stats|length > 1 %}
-        {% if not ('ID' in sheet_stats and sheet_stats|length == 1) %}
-
-         <!-- Display table for each sheet's statistics -->
-
-            <h4>{{ sheet_name }}</h4>
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr class="bg-royalblue text-white">
-                        <th class="col-1 custom-th" >Column</th>
-                        <th class="col-1 custom-th" >Mean</th>
-                        <th class="col-1 custom-th" >Median</th>
-                        <th class="col-1 custom-th" >Mode</th>
-                        <th class="col-1 custom-th" >Standard Deviation</th>
-                        <th class="col-1 custom-th" >Variance</th>
-                        <th class="col-1 custom-th" >Skewness</th>
-                        <th class="col-1 custom-th" >Kurtosis</th>
-                    </tr>
-                </thead>
-                
-                <tbody>
-                    {% for column, stat in sheet_stats.items() %}
-                        {% if 'id' not in column|lower %}
-                        <tr>
-                            <td class="col-1">{{ column }}</td>
-                            <td class="col-1">{{ stat['Mean']|round(2) }}</td>
-                            <td class="col-1">{{ stat['Median']|round(2) }}</td>
-                            <td class="col-1">{{ stat['Mode']|join(", ") }}</td>
-                            <td class="col-1">{{ stat['Standard Deviation']|round(2) }}</td>
-                            <td class="col-1">{{ stat['Variance']|round(2) }}</td>
-                            <td class="col-1">{{ stat['Skewness']|round(2) }}</td>
-                            <td class="col-1">{{ stat['Kurtosis']|round(2) }}</td>
-                        </tr>
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>           
-        {% endif %}
-    {% endif %}
-{% endfor %}
-{% endfor %}
-{% endif %}
-
-
-<!-- Visualization section -->
-
-<h2>Statistics Visualization {{ sheet_name }}</h2>
-<div id="visualization-{{ sheet_name|replace(' ', '_') }}"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
-
 <script>
-    // Fetch the list of filenames
-    d3.json("/list_files").then(function(files) {
-        // Iterate over each filename and fetch its data
-        files.forEach(function(filename) {
-            d3.json(`/get_json_data/${filename}`).then(function(data) {
-                // Iterate over each sheet in the JSON data
-                Object.keys(data).forEach(function(sheetName) {
-                    var sheetData = data[sheetName];
-    
-                    Object.keys(sheetData).forEach(function(metric) {
-                        var dataPoints = sheetData[metric];
-    
-                        // Extract values for the current metric
-                        var flattenedData = Object.values(dataPoints).map(d => parseFloat(d)).filter(d => !isNaN(d));
-    
-                        // Determine the maximum value to set the y-axis limit
-                        var maxY = Math.max(...flattenedData);
-                        var yLimit = maxY > 0.1 ? 0.15 : 0.5;
-    
-                        // Define scales
-                        var margin = {top: 30, right: 30, bottom: 50, left: 50},
-                            width = 500 - margin.left - margin.right,
-                            height = 250 - margin.top - margin.bottom;
-                          
-    
-                        var xScale = d3.scaleLinear()
-                                       .domain([-10, 10])
-                                       .range([0, width]);
-    
-                        var yScale = d3.scaleLinear()
-                                       .domain([0, 0.30])
-                                       .range([height, 0]);
-    
-                        // Set up SVG for the current column
-                        var svg = d3.select("#visualization-{{ sheet_name|replace(' ', '_') }}")
-                                    .append("div")
-                                    .attr("class", "graph-container")
-                                    .append("svg")
-                                    .attr("width", width + margin.left + margin.right)
-                                    .attr("height", height + margin.top + margin.bottom)
-                                    .append("g")
-                                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
-                        // Add title
-                        svg.append("text")
-                            .attr("x", width / 2)
-                            .attr("y", 0 - (margin.top / 2))
-                            .attr("text-anchor", "middle")
-                            .attr("font-size", "20px")
-                            .text(sheetName + ' - ' + metric);
-    
-                        // Define kernel density estimator for normal distribution
-                        var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
-                        var density = kde(flattenedData);
-    
-                        // Draw KDE line
-                        var line = d3.line()
-                                     .x(d => xScale(d[0]))
-                                     .y(d => yScale(d[1]));
-    
-                        svg.append("path")
-                           .datum(density)
-                           .attr("fill", "none")
-                           .attr("stroke", "blue")
-                           .attr("stroke-width", 2)
-                           .attr("d", line);
-    
-                        // Draw axes
-                        svg.append("g")
-                           .attr("transform", "translate(0," + height + ")")
-                           .call(d3.axisBottom(xScale).ticks(10));
-    
-                        svg.append("g")
-                           .call(d3.axisLeft(yScale).ticks(10));
-    
-                        // Add axis labels
-                        svg.append("text")
-                           .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top) + ")")
-                           .style("text-anchor", "middle")
-                           .text("Values");
-    
-                        svg.append("text")
-                           .attr("transform", "rotate(-90)")
-                           .attr("y", 0 - margin.left)
-                           .attr("x", 0 - (height / 2))
-                           .attr("dy", "1em")
-                           .style("text-anchor", "middle")
-                           .text("Density");
-                    });
-    
+function updateSheets() {
+    var fileName = $('#file-select').val();
+    if (fileName) {
+        $.ajax({
+            url: '/get-sheets',
+            type: 'POST',
+            data: { filename: fileName },
+            success: function(response) {
+                $('#sheet-select').empty();
+                $('#sheet-select').append('<option value="">Select a sheet...</option>');
+                response.sheets.forEach(function(sheet) {
+                    $('#sheet-select').append('<option value="' + sheet + '">' + sheet + '</option>');
                 });
-    
-            }).catch(function(error) {
-                console.error(`Error fetching data for ${filename}:`, error);
-            });
+            }
         });
-    }).catch(function(error) {
-        console.error('Error fetching the list of files:', error);
+    }
+}
+
+function showTable() {
+    var fileName = $('#file-select').val();
+    var sheetName = $('#sheet-select').val();
+    if (fileName && sheetName) {
+        $.ajax({
+            url: '/get-statistics',
+            type: 'POST',
+            data: { filename: fileName, sheetname: sheetName },
+            success: function(response) {
+                console.log("Response received:", response);
+                var tableHtml = '<h2>Statistics Summary</h2>';
+                tableHtml += '<h3>' + fileName + '</h3>';
+                tableHtml += '<h4>' + sheetName + '</h4>';
+                tableHtml += '<table class="table table-bordered table-hover">';
+                tableHtml += '<thead>';
+                tableHtml += '<tr class="bg-royalblue text-white">';
+                tableHtml += '<th class="col-1 custom-th">Column</th>';
+                tableHtml += '<th class="col-1 custom-th">Mean</th>';
+                tableHtml += '<th class="col-1 custom-th">Median</th>';
+                tableHtml += '<th class="col-1 custom-th">Mode</th>';
+                tableHtml += '<th class="col-1 custom-th">Standard Deviation</th>';
+                tableHtml += '<th class="col-1 custom-th">Variance</th>';
+                tableHtml += '<th class="col-1 custom-th">Skewness</th>';
+                tableHtml += '<th class="col-1 custom-th">Kurtosis</th>';
+                tableHtml += '</tr>';
+                tableHtml += '</thead>';
+                tableHtml += '<tbody>';
+                $.each(response.statistics, function(column, stats) {
+                    console.log("Column:", column, "Stats:", stats);
+                    tableHtml += '<tr>';
+                    tableHtml += '<td class="col-1">' + column + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Mean'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Median'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + (Array.isArray(stats['Mode']) ? stats['Mode'].join(", ") : stats['Mode']) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Standard Deviation'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Variance'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Skewness'].toFixed(2) + '</td>';
+                    tableHtml += '<td class="col-1">' + stats['Kurtosis'].toFixed(2) + '</td>';
+                    tableHtml += '</tr>';
+                });
+                tableHtml += '</tbody>';
+                tableHtml += '</table>';
+                $('#statistics-table').html(tableHtml);
+                // Call the updateVisualization function after updating the table
+                 updateVisualization();
+
+            }
+        });
+    }
+    else {
+        $('#statistics-table').empty();
+    }
+}
+
+function updateVisualization(){
+
+    
+    // Get the element with id "visualization"
+    var visualizationElement = document.getElementById("visualization");
+            // Set its innerHTML to the message
+     visualizationElement.innerHTML = "This is a message printed from inside a function.";
+
+     var fileName = $('#file-select').val();
+var sheetName = $('#sheet-select').val();
+
+if (fileName && sheetName) {
+    $(document).ready(function() {
+        console.log("Fetching list of files...");
+        // Fetch the list of filenames
+        $.ajax({
+            url: '/list_files',
+            type: 'GET',
+            success: function(files) {
+                console.log("List of files received:", files);
+                // Iterate over each filename and fetch its data
+                files.forEach(function(filename) {
+                    console.log("Fetching data for file:", filename);
+
+                    $.ajax({
+                        url: `/get_json_data/${filename}`,
+                        type: 'GET',
+                        success: function(data) {
+                            console.log("Data received for file:", filename, data);
+                            // Check if the selected sheet exists in the data
+                            if (sheetName in data) {
+                                console.log("Selected sheet found:", sheetName);
+                                var sheetData = data[sheetName];
+                                Object.keys(sheetData).forEach(function(metric) {
+                                    console.log("Processing metric:", metric);
+                                    var dataPoints = sheetData[metric];
+
+                                    // Extract values for the current metric
+                                    var flattenedData = Object.values(dataPoints).map(d => parseFloat(d)).filter(d => !isNaN(d));
+                                    console.log("Flattened data:", flattenedData);
+                                    // Determine the maximum value to set the y-axis limit
+                                    var maxY = Math.max(...flattenedData);
+                                    var yLimit = maxY > 0.1 ? 0.15 : 0.5;
+                                    console.log("MaxY:", maxY, "YLimit:", yLimit);
+                                    // Define scales
+                                    var margin = {top: 30, right: 30, bottom: 50, left: 50},
+                                        width = 500 - margin.left - margin.right,
+                                        height = 250 - margin.top - margin.bottom;
+                                    console.log("Margin:", margin, "Width:", width, "Height:", height);
+
+                                    var xScale = d3.scaleLinear()
+                                                   .domain([-10, 10])
+                                                   .range([0, width]);
+
+                                    var yScale = d3.scaleLinear()
+                                                   .domain([0, 0.30])
+                                                   .range([height, 0]);
+
+                                    // Set up SVG for the current column
+                                    console.log("Creating SVG for", sheetName);
+                                    var svg = d3.select("#visualization")
+                                                .append("div")
+                                                .attr("class", "graph-container")
+                                                .append("svg")
+                                                .attr("width", width + margin.left + margin.right)
+                                                .attr("height", height + margin.top + margin.bottom)
+                                                .append("g")
+                                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                                    // Add title
+                                    svg.append("text")
+                                        .attr("x", width / 2)
+                                        .attr("y", 0 - (margin.top / 2))
+                                        .attr("text-anchor", "middle")
+                                        .attr("font-size", "20px")
+                                        .text(sheetName + ' - ' + metric);
+
+                                    // Define kernel density estimator for normal distribution
+                                    var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
+                                    var density = kde(flattenedData);
+
+                                    // Draw KDE line
+                                    var line = d3.line()
+                                                 .x(d => xScale(d[0]))
+                                                 .y(d => yScale(d[1]));
+
+                                    svg.append("path")
+                                       .datum(density)
+                                       .attr("fill", "none")
+                                       .attr("stroke", "blue")
+                                       .attr("stroke-width", 2)
+                                       .attr("d", line);
+
+                                    // Draw axes
+                                    svg.append("g")
+                                       .attr("transform", "translate(0," + height + ")")
+                                       .call(d3.axisBottom(xScale).ticks(10));
+
+                                    svg.append("g")
+                                       .call(d3.axisLeft(yScale).ticks(10));
+
+                                    // Add axis labels
+                                    svg.append("text")
+                                       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top) + ")")
+                                       .style("text-anchor", "middle")
+                                       .text("Values");
+
+                                    svg.append("text")
+                                       .attr("transform", "rotate(-90)")
+                                       .attr("y", 0 - margin.left)
+                                       .attr("x", 0 - (height / 2))
+                                       .attr("dy", "1em")
+                                       .style("text-anchor", "middle")
+                                       .text("Density");
+                                });
+                            } else {
+                                console.log("Selected sheet not found:", sheetName);
+                            }
+                        },
+                        error: function(error) {
+                            console.error(`Error fetching data for ${filename}:`, error);
+                        }
+                    });
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching the list of files:', error);
+            }
+        });
     });
-    
-    // Kernel density estimation
-    function kernelDensityEstimator(kernel, x) {
-        return function(sample) {
-            return x.map(function(x) {
-                return [x, d3.mean(sample, function(v) { return kernel(x - v); })];
-            });
-        };
-    }
-    
-    function kernelGaussian(k) {
-        return function(v) {
-            return Math.exp(-0.5 * v * v) / Math.sqrt(2 * Math.PI);
-        };
-    }
+}
+
+// Kernel density estimation
+function kernelDensityEstimator(kernel, x) {
+    return function(sample) {
+        return x.map(function(x) {
+            return [x, d3.mean(sample, function(v) { return kernel(x - v); })];
+        });
+    };
+}
+
+function kernelGaussian(k) {
+    return function(v) {
+        return Math.exp(-0.5 * v * v) / Math.sqrt(2 * Math.PI);
+    };
+}
+}
+
 </script>
+
+
 {% endblock %}
