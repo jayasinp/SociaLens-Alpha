@@ -7,6 +7,10 @@ from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file  
 
+from flask import send_file, request
+import pdfkit
+from flask import make_response
+
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Required to use flash messages
 
@@ -268,6 +272,123 @@ def support():
 def feedback():
     breadcrumbs = [("Home", "/"), ("Feedback", "/feedback")]
     return render_template('feedback.html', breadcrumbs=breadcrumbs)
+
+@app.route('/get_available_datasets')
+def get_available_datasets():
+    files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    return jsonify(files)
+
+@app.route('/get_available_sheets/<dataset>')
+def get_available_sheets(dataset):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], dataset)
+    if not os.path.exists(file_path):
+        return jsonify([])  # Return an empty list if the file doesn't exist
+    
+    # Check the file extension and read accordingly
+    if dataset.endswith(('.xlsx', '.xls')):
+        # Read all sheets; each sheet's name is added to a list
+        xls = pd.ExcelFile(file_path)
+        sheets = xls.sheet_names
+    elif dataset.endswith('.csv'):
+        # For CSV files, there's only one sheet, so return a list containing 'CSV'
+        sheets = ['CSV']
+    else:
+        return jsonify([])  # Unsupported file format, return an empty list
+
+    return jsonify(sheets)
+
+def get_numeric_columns(df):
+    return df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+
+@app.route('/get_available_statistics/<dataset>/<sheet>')
+def get_available_statistics(dataset, sheet):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], dataset)
+    if not os.path.exists(file_path):
+        return jsonify([])  # Return an empty list if the file doesn't exist
+    
+    # Check the file extension and read accordingly
+    if dataset.endswith(('.xlsx', '.xls')):
+        # Read the specific sheet to get column names
+        xls = pd.ExcelFile(file_path)
+        df = pd.read_excel(xls, sheet)
+    elif dataset.endswith('.csv'):
+        # For CSV files, read the specific sheet
+        df = pd.read_csv(file_path)
+    else:
+        return jsonify([])  # Unsupported file format, return an empty list
+    
+    # Analyze the dataset to determine available statistics
+    available_statistics = []
+    numeric_columns = df.select_dtypes(include=['float64', 'int64'])
+    for column in numeric_columns:
+        available_statistics.append('Mean')
+        available_statistics.append('Median')
+        available_statistics.append('Mode')
+        available_statistics.append('Standard Deviation')
+        available_statistics.append('Variance')
+        available_statistics.append('Skewness')
+        available_statistics.append('Kurtosis')
+        # Additional statistics can be added based on your requirements
+    
+    # Remove duplicates and return the list of available statistics
+    available_statistics = list(set(available_statistics))
+    
+    return jsonify(available_statistics)
+
+@app.route('/generate_report', methods=['POST'])
+def generate_report():
+    # Get selected dataset, sheet, and ticked statistics from the POST request
+    selected_dataset = request.form['dataset']
+    selected_sheet = request.form['sheet']
+    selected_statistics = request.form.getlist('available_statistics[]')  # Assuming checkboxes are named 'statistics[]'
+
+    # Fetch the statistical values from the JSON file based on selected_dataset and selected_sheet
+    json_filename = selected_dataset.replace('.', '_') + '.json'
+    json_file_path = os.path.join(app.config['JSON_FOLDER'], json_filename)
+    
+    if not os.path.exists(json_file_path):
+        flash("JSON file not found for the selected dataset.", 'danger')
+        return redirect(url_for('report_generator'))
+
+    with open(json_file_path, 'r') as file:
+        data = json.load(file)
+
+    # Filter the data to include only selected statistics
+    selected_stats = {}
+    for column, stats in data[selected_sheet].items():
+        include_column = True
+        for stat, value in stats.items():
+            if stat in selected_statistics:
+                if isinstance(value, list) and len(value) > 1:
+                    # If the value is a list and contains more than 1 value, exclude this column
+                    include_column = False
+                    break
+        if include_column:
+            selected_stats[column] = {stat: value for stat, value in stats.items() if stat in selected_statistics}
+
+    # Construct report content
+    report_content = f"""
+    <h1>Report</h1>
+    <p>Selected Dataset: {selected_dataset}</p>
+    <p>Selected Sheet: {selected_sheet}</p>
+    <p>Selected Statistics: {', '.join(selected_statistics)}</p>
+    <table border="1">
+        <tr>
+            <th>Column</th>
+            {''.join(f'<th>{stat}</th>' for stat in selected_statistics)}
+        </tr>
+        {''.join(f"<tr><td>{column}</td>{''.join(f'<td>{round(value, 2) if not isinstance(value, list) else round(value[0], 2)}</td>' for value in stats.values())}</tr>" for column, stats in selected_stats.items())}
+    </table>
+    """
+    
+    # Generate PDF using pdfkit
+    pdf = pdfkit.from_string(report_content, False)
+
+    # Send the PDF file back to the client for download
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
