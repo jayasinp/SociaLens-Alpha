@@ -1,0 +1,91 @@
+
+/* full disclosure, I pasted in the light rules into Gemini */
+/* I gave it some sample colors and said modify everything for Dark mode */
+
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+label.check span {
+    padding: 7px 14px; 
+    border: none; /* Removes the default border */
+    display: inline-block;
+    color: #039BE5; /* You can keep your color or adjust as needed */
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+ /* DARK MODE */
+body.dark-mode, body.dark-mode html {
+    background-color: #191b28; /* Deep dark background */
+    color: #d4d7dc; /* Softer, neutral light text */
+}
+
+body.dark-mode .main-content-container {
+    background-color: #202336; /* Slightly lighter content background */
+}
+
+body.dark-mode label.check span {
+    background-color: #202336; /* Slightly lighter background for dark mode */
+}
+
+body.dark-mode .top-bar {
+    background-color: #1e2030; /* Slightly darker top bar */
+    border-bottom: 1px solid #262a40; /* Subtler border */
+}
+
+body.dark-mode .sidebar {
+    background: #23263c; 
+    border-right: 1px solid #262a40;
+}
+
+body.dark-mode .header-title { 
+    color: #e8ebf2; /* Slightly muted default text */
+}
+
+body.dark-mode .header-title span.lens { 
+    color: #6caee0; /* Softer 'Lens' blue */  
+}
+
+body.dark-mode .header-title span.version {
+    color: #e16a7a; /* Softer version number color */
+} 
+
+body.dark-mode .sidebar h3 {
+color: #d4d7dc; /* Match regular text color in dark mode */
+}
+
+body.dark-mode .nav-link {
+    color: #bbc0cc; /* Slightly grayer unselected links */
+}
+
+body.dark-mode .nav-link:hover, 
+body.dark-mode .active .nav-link {
+    background-color: #6caee0; /* Same blue for hover/active */
+    color: #191b28; /* Very dark text on hover */
+}
+
+body.dark-mode .content {
+    background: #202336; 
+}
+
+body.dark-mode label.check span {
+    border-color: #6caee0; /* Blue border in dark mode */
+    color: #6caee0;
+}
+
+body.dark-mode label.check input:checked + span {
+    background-color: #6caee0; /* Blue background on selection */
+    color: #191b28; /* Very dark text on selection */
+}
+
+body.dark-mode .card {
+    background-color: #282c45;
+    border-color: #303654;
+}
+
+body.dark-mode .file-explorer { 
+    background-color: #1e2030;  /* Slightly darker file explorer */
+    border-color: #262a40; 
+}

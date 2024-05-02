@@ -3,6 +3,7 @@
 {% block title %}Analysis Results{% endblock %}
 
 {% block content %}
+<div class="main-content-container">
 <h1>Analysis Results for {{ filename }}</h1>
 <label for="sheetSelect">Select a Sheet:</label>
 <select id="sheetSelect" class="form-select mb-3" onchange="showSheet(this.value)">
@@ -17,6 +18,7 @@
         {{ table_html|safe }}
     </div>
     {% endfor %}
+</div>
 </div>
 
 <style>
