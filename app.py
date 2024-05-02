@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, session
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from werkzeug.utils import secure_filename
 import os
@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file  
+from chatbot import talktogpt
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Required to use flash messages
@@ -248,6 +249,62 @@ def report_generator():
             'name': filename,
         })
     return render_template('report_generator.html', breadcrumbs=breadcrumbs)
+
+
+#App route for selecting the dataset for the chatbot
+@app.route('/chatbot', methods=['GET', 'POST'])
+def chatbot():
+    # Load available files for the selection dropdown
+    files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
+    return render_template('chatbot.html', files=files)
+
+
+#actual interface
+@app.route('/chat-interface', methods=['GET', 'POST'])
+def chat_interface():
+    # Accessing the selected file and sheet from the URL query parameters
+    file = request.args.get('file')
+    file = file.replace('.xlsx', '')
+    sheet = request.args.get('sheet')
+    file_path = request.args.get('filePath')  # filepath variable assignment
+    selector = file + "_" + sheet + '.txt'
+    
+        
+
+    # Initialize file_contents variable outside the conditional blocks
+    file_contents = ""
+    stored_message=""
+    response =""
+    if not file or not sheet:
+        # Redirect back to selection if no file or sheet is provided
+        return redirect(url_for('chatbot'))
+
+    # Construct the full path to the file
+    full_file_path = os.path.join(file_path, selector)  # Corrected to use full_file_path
+    if os.path.exists(full_file_path):
+        # Read the specified file
+        try:
+            with open(full_file_path, 'r') as file:  # Corrected to use full_file_path
+                file_contents = file.read()
+                
+        except Exception as e:
+            file_contents = f"Failed to read the file: {str(e)}"
+    else:
+        file_contents = "File does not exist."
+    # save file contents to session
+    session['file_contents']=file_contents
+    return render_template('chat-interface.html', filePath=file_path, selector=selector, file_contents=file_contents, stored_message=stored_message, response=response)
+
+@app.route('/send-message', methods=['POST'])
+def send_message():
+    # Extract the message from the form data
+    user_message = request.form.get('message')
+    #retrieve file contents froms ession
+    file_contents = session.get('file_contents')
+    prompt = "i will provide some statistical summaries and a question, please respond in a simple yet descriptive manner " + file_contents+" " +user_message
+    response=talktogpt(prompt)
+    return response
+
 
 @app.route('/login')
 def user_profile():

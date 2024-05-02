@@ -1,0 +1,1 @@
+ Mean of 20, Mode of 22, Median of 21, Maximum of 30, Minimum of 15.
