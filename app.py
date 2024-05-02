@@ -356,14 +356,7 @@ def generate_report():
     # Filter the data to include only selected statistics
     selected_stats = {}
     for column, stats in data[selected_sheet].items():
-        include_column = True
-        for stat, value in stats.items():
-            if stat in selected_statistics:
-                if isinstance(value, list) and len(value) > 1:
-                    # If the value is a list and contains more than 1 value, exclude this column
-                    include_column = False
-                    break
-        if include_column:
+        if 'ID' not in column and 'id' not in column:
             selected_stats[column] = {stat: value for stat, value in stats.items() if stat in selected_statistics}
 
     # Construct report content
@@ -377,7 +370,7 @@ def generate_report():
             <th>Column</th>
             {''.join(f'<th>{stat}</th>' for stat in selected_statistics)}
         </tr>
-        {''.join(f"<tr><td>{column}</td>{''.join(f'<td>{round(value, 2) if not isinstance(value, list) else round(value[0], 2)}</td>' for value in stats.values())}</tr>" for column, stats in selected_stats.items())}
+        {''.join(f"<tr><td>{column}</td>{''.join(f'<td>{value}</td>' if isinstance(value, list) else f'<td>{round(value, 2)}</td>' for value in stats.values())}</tr>" for column, stats in selected_stats.items())}
     </table>
     """
     
