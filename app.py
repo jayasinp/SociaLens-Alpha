@@ -35,6 +35,15 @@ app.config['RAW_DATA_FOLDER'] = RAW_DATA_FOLDER
 # Ensure the raw_data_objects directory exists
 os.makedirs(RAW_DATA_FOLDER, exist_ok=True)
 
+# Set the path for the prompt_files folder
+PROMPT_FILES_FOLDER = 'prompt_files'
+app.config['PROMPT_FILES_FOLDER'] = 'prompt_files'  # Path for the output text files
+os.makedirs(app.config['PROMPT_FILES_FOLDER'], exist_ok=True)
+
+# Set the path for the network_prompt_files folder where network statistics are saved for gpt3.5
+NETWORK_PROMPT_FILES_FOLDER = 'network_prompt_files'
+app.config['NETWORK_PROMPT_FILES_FOLDER'] = 'network_prompt_files'  # Path for the output text files
+os.makedirs(app.config['NETWORK_PROMPT_FILES_FOLDER'], exist_ok=True)
 
 # INDEX ROUTE
 # go to home page
