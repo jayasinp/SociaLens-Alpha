@@ -7,9 +7,11 @@ from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file  
 
-from flask import send_file, request
-import pdfkit
-from flask import make_response
+from flask import send_file
+
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Required to use flash messages
@@ -359,29 +361,41 @@ def generate_report():
         if 'ID' not in column and 'id' not in column:
             selected_stats[column] = {stat: value for stat, value in stats.items() if stat in selected_statistics}
 
-    # Construct report content
-    report_content = f"""
-    <h1>Report</h1>
-    <p>Selected Dataset: {selected_dataset}</p>
-    <p>Selected Sheet: {selected_sheet}</p>
-    <p>Selected Statistics: {', '.join(selected_statistics)}</p>
-    <table border="1">
-        <tr>
-            <th>Column</th>
-            {''.join(f'<th>{stat}</th>' for stat in selected_statistics)}
-        </tr>
-        {''.join(f"<tr><td>{column}</td>{''.join(f'<td>{value}</td>' if isinstance(value, list) else f'<td>{round(value, 2)}</td>' for value in stats.values())}</tr>" for column, stats in selected_stats.items())}
-    </table>
-    """
-    
-    # Generate PDF using pdfkit
-    pdf = pdfkit.from_string(report_content, False)
+    # Construct report content using ReportLab
+    doc = SimpleDocTemplate("report.pdf", pagesize=letter)
+    styles = getSampleStyleSheet()
+    report_content = []
 
-    # Send the PDF file back to the client for download
-    response = make_response(pdf)
-    response.headers['Content-Type'] = 'application/pdf'
-    response.headers['Content-Disposition'] = 'attachment; filename=report.pdf'
-    return response
+    # Add report title
+    report_content.append(Paragraph(f"Report for {selected_dataset}", styles['Title']))
+
+    # Add selected dataset, sheet, and statistics
+    # report_content.append(Paragraph(f"<strong>Selected Dataset:</strong> {selected_dataset}", styles['Normal']))
+    # report_content.append(Paragraph(f"<strong>Selected Sheet:</strong> {selected_sheet}", styles['Normal']))
+    # report_content.append(Paragraph(f"<strong>Selected Statistics:</strong> {', '.join(selected_statistics)}", styles['Normal']))
+    # report_content.append(Paragraph(f" ", styles['Normal']))
+
+    # Add statistics table
+    table_data = [["Column"] + selected_statistics]
+    for column, stats in selected_stats.items():
+        row = [str(column)] + [str(round(value, 2)) if isinstance(value, (int, float)) else str(value) for value in stats.values()]
+        table_data.append(row)
+
+    # Create table
+    table = Table(table_data)
+    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), '#f2f2f2'),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), '#333'),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('GRID', (0, 0), (-1, -1), 1, '#dddddd')]))
+
+    # Add table to content
+    report_content.append(table)
+
+    # Build PDF
+    doc.build(report_content)
+
+    # Send the generated PDF file back to the client for download
+    return send_file("report.pdf", as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
