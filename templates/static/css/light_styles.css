@@ -170,14 +170,6 @@ p {
     line-height: 1.5rem
     }
     
-    .breadcrumbs {
-color: #000; 
-margin-left: 20px; 
-    }
-
-    .breadcrumbs a {
-        color: #000; 
-}
 
     .file-explorer {
         border: 1px solid #ddd; 

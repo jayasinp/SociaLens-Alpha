@@ -85,14 +85,6 @@ body.dark-mode .card {
     border-color: #303654;
 }
 
-body.dark-mode .breadcrumbs { 
-    color: #a6abb8; /* Less bright breadcrumbs */
-}
-
-body.dark-mode .breadcrumbs a {
-    color: #a6abb8; 
-}
-
 body.dark-mode .file-explorer { 
     background-color: #1e2030;  /* Slightly darker file explorer */
     border-color: #262a40; 

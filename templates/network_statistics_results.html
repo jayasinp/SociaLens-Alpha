@@ -50,9 +50,13 @@
 
 <div class="main-content-container">
     <h1>Network Statistics Results for {{ filename }}</h1>
+    <div class="alert alert-info" role="alert">
+        🤞Click on a table header to sort the table by that column.
+        Click once for ascending order, click again for descending order.
+    </div>
 
     {% for sheet in network_stats %}
-    <h2>Sheet: {{ sheet.sheet_name }}</h2>
+    
     <table class="table table-striped" id="network-stats-table">
         <thead>
             <tr>

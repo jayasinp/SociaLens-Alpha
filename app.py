@@ -13,21 +13,28 @@ app.secret_key = 'supersecretkey'  # Required to use flash messages
 
 # FILE PATHS
 # Set the path for the uploads folder
-# Uploads folder is used to collect scraped data
-# Uploads folder is used to receive cleaned data
 UPLOAD_FOLDER = 'uploads'
+# define the allowed file types
 ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# define the max file size allowed
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB upload limit
+# Ensure the upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Set the path for the json folder
 JSON_FOLDER = 'json_objects'
 JSON_EXTENSIONS = {'json'}
 app.config['JSON_FOLDER'] = JSON_FOLDER
+# Ensure the JSON directory exists
 os.makedirs(JSON_FOLDER, exist_ok=True)
 
-# Ensure the upload directory exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Set the path for the raw_data_objects folder
+RAW_DATA_FOLDER = 'raw_data_objects'
+app.config['RAW_DATA_FOLDER'] = RAW_DATA_FOLDER
+# Ensure the raw_data_objects directory exists
+os.makedirs(RAW_DATA_FOLDER, exist_ok=True)
+
 
 # INDEX ROUTE
 # go to home page
@@ -57,41 +64,89 @@ def data_cleaner():
     return render_template('data_cleaner.html', breadcrumbs=breadcrumbs)
 
 # DATA UPLOAD ROUTE
+# BIG CHANGES HERE -> Automatically creates separate excel, csv and JSON files after file upload from raw data
 # Route for uploading data files
 @app.route('/data-upload', methods=['GET', 'POST'])
 def data_upload():
+    # Define navigation breadcrumbs for the user interface
     breadcrumbs = [("Home", "/"), ("Data Upload", "/data-upload")]
 
+    # Handle POST requests, which are sent when a user uploads a file
     if request.method == 'POST':
+        # Retrieve the file from the form input named 'dataFile'
         file = request.files['dataFile']
-        if file and allowed_file(file.filename):  # Make sure you have an 'allowed_file' function
+        # Validate the file using the allowed_file function to check its extension
+        if file and allowed_file(file.filename):
+            # Secure the filename to avoid file system injection attacks
             filename = secure_filename(file.filename)
+            # Construct the file path where the file will be saved
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            # Save the file to the specified path
             file.save(file_path)
-
+            # Notify the user of successful upload
             flash('File uploaded successfully!', 'success')
 
-            # Update files info immediately
+            # Additional processing for Excel files
+            if filename.endswith(('.xlsx', '.xls')):
+                # Process the Excel file to extract each sheet and save in different formats
+                process_excel(file_path, filename)
+
+            # Update file list and details immediately after upload
             files = os.listdir(app.config['UPLOAD_FOLDER'])
             files_info = [{
-                'name': file,
-                'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
-                'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
-            } for file in files]
+                'name': file_name,
+                'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file_name)).st_size / 1024:.2f} KB",
+                'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file_name)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+            } for file_name in files]
 
-            return redirect(url_for('data_upload'))  # Redirect to refresh the page
+            # Redirect to the upload page to show the update and clean form
+            return redirect(url_for('data_upload'))
         else:
+            # Notify the user if the uploaded file type is not allowed
             flash('Invalid file type. Please upload .csv, .xlsx, or .xls files only.', 'danger')
 
-    # Retrieve file information for displaying existing uploads
+    # For GET requests or after file upload, list all files in the upload directory
     files = os.listdir(app.config['UPLOAD_FOLDER'])
-    files_info = [{
+    files_info = format_files_info(files)
+    # Render the upload page with breadcrumbs and file information
+    return render_template('data_upload.html', breadcrumbs=breadcrumbs, files=files_info)
+
+# PART OF DATA UPLOAD ROUTE -> Opens excel, then creates separate file types from individual sheets.
+def process_excel(file_path, original_filename):
+    # Open the Excel file for reading
+    xls = pd.ExcelFile(file_path)
+    # Strip the extension from the filename to use as a base for new files
+    base_filename = original_filename.rsplit('.', 1)[0]
+
+    # Create a directory for this specific file's processed outputs
+    data_directory = os.path.join(app.config['RAW_DATA_FOLDER'], base_filename)
+    os.makedirs(data_directory, exist_ok=True)
+
+    # Process each sheet in the Excel file and save them in the newly created directory
+    for sheet_name in xls.sheet_names:
+        # Read the sheet into a DataFrame
+        df = pd.read_excel(xls, sheet_name)
+        # Create a filename for each format based on the original filename and sheet name
+        sheet_base_filename = f"{base_filename}_{sheet_name}"
+        
+        # Save the DataFrame to an Excel file
+        df.to_excel(os.path.join(data_directory, f"{sheet_base_filename}.xlsx"), index=False)  # Corrected path
+        
+        # Save the DataFrame to a CSV file
+        df.to_csv(os.path.join(data_directory, f"{sheet_base_filename}.csv"), index=False)  # Corrected path
+        
+        # Convert the DataFrame to JSON and save to a file, using a traditional array format
+        df.to_json(os.path.join(data_directory, f"{sheet_base_filename}.json"), orient='records')  # Corrected path
+
+
+def format_files_info(files):
+    # Generate file information for the user interface
+    return [{
         'name': file,
         'size': f"{os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_size / 1024:.2f} KB",
         'upload_time': datetime.fromtimestamp(os.stat(os.path.join(app.config['UPLOAD_FOLDER'], file)).st_mtime).strftime('%Y-%m-%d %H:%M:%S')
     } for file in files]
 
-    return render_template('data_upload.html', breadcrumbs=breadcrumbs, files=files_info)
 
 # DATASETS ROUTE 
 # ! DEPRECATED !
@@ -183,30 +238,54 @@ def analyze_data():
 @app.route('/network-statistics', methods=['GET', 'POST'])
 def network_statistics():
     if request.method == 'POST':
+        selected_folder = request.form.get('selectedFolder')
         selected_file = request.form.get('selectedFile')
-        if not selected_file:  # Check if a file was selected
-            flash("Please select a file.", 'warning')
+        file_path = os.path.join(app.config['RAW_DATA_FOLDER'], selected_folder, selected_file)
+        
+        if not os.path.exists(file_path):
+            flash("Selected file does not exist.", 'danger')
             return redirect(url_for('network_statistics'))
 
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], selected_file)
+        if not selected_folder or not selected_file:
+            flash("Please select both a folder and a file.", 'warning')
+            return redirect(url_for('network_statistics'))
+
+        file_path = os.path.join(app.config['RAW_DATA_FOLDER'], selected_folder, selected_file)
         if not os.path.exists(file_path):
-            flash("File does not exist.", 'danger')
-            return redirect(url_for('network_statistics')) 
+            flash("Selected file does not exist.", 'danger')
+            return redirect(url_for('network_statistics'))
 
         try:
-            network_stats = calculate_network_statistics(file_path) 
-            breadcrumbs = [("Home", "/"), ("Select Dataset for Network Statistics", "/network_statistics")]
-            return render_template('network_statistics_results.html', network_stats=network_stats, filename=selected_file, breadcrumbs=breadcrumbs)
-
+            from calculate_network_statistics import calculate_network_statistics
+            network_stats = calculate_network_statistics(file_path)
+            return render_template('network_statistics_results.html', network_stats=network_stats, filename=selected_file)
         except Exception as e:
             flash(f"Failed to calculate network statistics: {str(e)}", 'danger')
             return redirect(url_for('network_statistics'))
 
     else:  # GET Request
-        files = os.listdir(app.config['UPLOAD_FOLDER'])
-        files = [f for f in files if allowed_file(f)] 
-        breadcrumbs = [("Home", "/"), ("Select Dataset for Network Statistics", "/network_statistics")] 
-        return render_template('network_statistics.html', breadcrumbs=breadcrumbs, files=files)
+        # This might be redundant now since we are using dynamic JavaScript loading
+        return render_template('network_statistics.html')
+
+@app.route('/api/get-files')
+def get_files():
+    folder = request.args.get('folder')
+    if folder:
+        directory = os.path.join(app.config['RAW_DATA_FOLDER'], folder)
+        try:
+            files = [f for f in os.listdir(directory) if f.endswith('.xlsx')]
+            return jsonify({'files': files})
+        except FileNotFoundError:
+            return jsonify({'error': 'Folder not found'}), 404
+    else:
+        # Fetch all folders in the base directory if no specific folder is requested
+        try:
+            folders = [f for f in os.listdir(app.config['RAW_DATA_FOLDER']) if os.path.isdir(os.path.join(app.config['RAW_DATA_FOLDER'], f))]
+            return jsonify({'folders': folders})
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+
+    return jsonify({'error': 'No folder specified'}), 400
 
 
 

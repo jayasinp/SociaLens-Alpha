@@ -4,24 +4,75 @@
 <div class="main-content-container"> 
     <h1>Network Statistics</h1>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
     <form action="{{ url_for('network_statistics') }}" method="post"> 
         <div class="mb-3">
-            <label for="selectedFile" class="form-label">Select a dataset to view its network statistics:</label>
-            <select class="form-select" id="selectedFile" name="selectedFile"> 
-                {% for file in files %}
-                    <option value="{{ file }}">{{ file }}</option>
-                {% endfor %}
+            <label for="selectedFolder" class="form-label">Select a Folder:</label>
+            <select class="form-select" id="selectedFolder" name="selectedFolder" onchange="enableSecondDropdown()"> 
+                <option value="">--Select a Folder--</option>
+                <!-- Dynamic folders will be populated here by server-side logic -->
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">View Network Stats</button>
+        <div class="mb-3">
+            <label for="selectedFile" class="form-label">Select a File:</label>
+            <select class="form-select" id="selectedFile" name="selectedFile" disabled> 
+                <option value="">--Select a File--</option>
+                <!-- Files will be enabled and populated based on folder selection -->
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" disabled id="viewStatsButton">View Network Statistics</button>
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    fetchFolders();  // Call fetchFolders on page load
+});
+
+function fetchFolders() {
+    fetch('/api/get-files')  // No folder parameter means fetch all folders
+        .then(response => response.json())
+        .then(data => {
+            if (data.folders) {
+                const folderSelect = document.getElementById('selectedFolder');
+                folderSelect.innerHTML = '<option value="">--Select a Folder--</option>';
+                data.folders.forEach(folder => {
+                    const option = document.createElement('option');
+                    option.value = folder;
+                    option.textContent = folder;
+                    folderSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error fetching folders:', error));
+}
+    function enableSecondDropdown() {
+        const folderSelect = document.getElementById('selectedFolder');
+        const fileSelect = document.getElementById('selectedFile');
+        const viewStatsButton = document.getElementById('viewStatsButton');
+        if (folderSelect.value) {
+            fileSelect.disabled = false;
+            fileSelect.innerHTML = '<option value="">--Loading Files--</option>';
+            fetch(`/api/get-files?folder=${folderSelect.value}`)  // Assuming you have an endpoint to fetch files
+                .then(response => response.json())
+                .then(data => {
+                    fileSelect.innerHTML = '<option value="">--Select a File--</option>';
+                    data.files.forEach(file => {
+                        const option = document.createElement('option');
+                        option.value = file;
+                        option.textContent = file;
+                        fileSelect.appendChild(option);
+                    });
+                    viewStatsButton.disabled = false;  // Enable button if files are loaded
+                })
+                .catch(error => {
+                    console.error('Error fetching files:', error);
+                    fileSelect.innerHTML = '<option value="">Failed to load files</option>';
+                    viewStatsButton.disabled = true;  // Keep button disabled if error
+                });
+        } else {
+            fileSelect.disabled = true;
+            fileSelect.innerHTML = '<option value="">--Select a File--</option>';
+            viewStatsButton.disabled = true;
+        }
+    }
+</script>
 {% endblock %}
