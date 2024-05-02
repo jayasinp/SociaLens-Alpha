@@ -5,176 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - SociaLens</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--CSS in external files-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/light_styles.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark_styles.css') }}" media="(prefers-color-scheme: dark)">     
+    <!--Breadcrumb styles here because external CSS doesn't work-->
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-    
-        .wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
         .top-bar {
-            width: 100%;
-            background-color: #013B7A; /* Deep blue background for the top bar */
-            color: white;
-            padding: 5px 20px; /* Minimal padding for a narrow bar */
-            text-align: left;
-            position: fixed;
-            top: 0; 
-            z-index:3;
-        }
-    
-        .sidebar {
-            min-width: 250px;
-            background: #013B7A; /* Consistent background color */
-            color: white;
-            padding: 40px 15px 15px 15px;
-            position: sticky; /* Make sidebar sticky */
-            top: 0; /* Start sticking at the top of the viewport */
-            height: 100vh; /* Optional: to make the sidebar take full viewport height */
-            overflow-y: auto; /* Optional: allows scrolling within the sidebar if content is long */
-    }
-
-    .sidebar h3 {
-            margin-bottom: 20px;
-    }
-    
-        .nav-link {
-            color: white;
-            padding: 10px 15px; /* Fixed padding applied to all states */
-            display: block; /* Ensures the link takes up the full available width */
-            transition: background-color 0.3s ease-in-out, border-radius 0.3s ease-in-out; /* Smooth transition for visual effects */
-            border-radius: 20px; /* Initial rounded corner for uniform appearance */
-            margin: 2px 0; /* Small margin to separate items slightly */
-        }
-    
-        .nav-link:hover, .active .nav-link {
-            background-color: white;
-            color: #013B7A; /* Text color changes to blue for better contrast */
-            padding: 10px 15px; /* Padding remains constant to prevent movement */
-            border-radius: 20px; /* Increased border-radius on hover for a softer look */
-        }
-    
-        .content {
-            flex-grow: 1;
-            background: #f8f9fa;
-            padding: 35px 20px 20px 20px;
-        }
-
-        label.check {
-            cursor: pointer;
-            padding: 2%;
-        }
-
-        label.check input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        label.check span {
-            padding: 7px 14px;
-            border: 2px solid #039BE5;
-            display: inline-block;
-            color: #039BE5;
-            border-radius: 3px;
-            text-transform: uppercase;
-        }
-
-        label.check input:checked + span {
-            border-color: #039BE5;
-            background-color: #039BE5;
-            color: #fff;
-        }
-        .mt-100 {
-            margin-top: 100px
-            }
-            
-        .mb-30{
-            margin-bottom: 30px;
-            }
-            
-        .card {
-            position: relative;
             display: flex;
-            flex-direction: column;
-            min-width: 0;
-            word-wrap: break-word;
-            background-color: #fff;
-            background-clip: border-box;
-            border: 1px solid #d2d2dc;
-            border-radius: 0
-            }
-            
-        .card .card-body {
-            padding: 1.25rem 1.75rem
-            }
-            
-        .card-body {
-            flex: 1 1 auto;
-            padding: 1.25rem
-            }
-            
-        .card .card-title {
-            color: #000000;
-            margin-bottom: 0.625rem;
-            text-transform: capitalize;
-            font-size: 0.875rem;
-            font-weight: 500
-            }
-            
-        .card .card-description {
-            margin-bottom: .875rem;
-            font-weight: 400;
-            color: #76838f
-            }
-            
-        p {
-            font-size: 0.875rem;
-            margin-bottom: .5rem;
-            line-height: 1.5rem
-            }
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        .header-title {
+            margin-right: auto;  /* Pushes everything else to the right */
+        }
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            color: #000;
+            margin-left: 20px; /* Space between the title and breadcrumbs */
+            margin-right: 20px; /* Space before the theme toggle */
+        }
+        .breadcrumbs a {
+            color: #000;
+            text-decoration: none; /* Optional: removes underline */
+        }
+        body.dark-mode .breadcrumbs, body.dark-mode .breadcrumbs a {
+            color: #a6abb8; /* Less bright color for dark mode */
+        }
     </style>
-    
-    
+    <!--All html files will be wrapped in a main-content-container div to seperate content window from nav and top bar-->
 </head>
-<body>
-    <div class="top-bar">
+<!--Top navigation bar for SociaLens logo and the Breadcrumbs for position awareness-->
+<div class="top-bar d-flex justify-content-between align-items-center" style="height: 60px;">
+    <h3 class="header-title">
+        Socia<span class="lens">Lens</span> <span class="version">Ɑv.1.71</span> 
+    </h3>
+    <div class="breadcrumbs"> 
         {% for label, url in breadcrumbs %}
             <a href="{{ url }}" class="breadcrumb-link">{{ label }}</a>
             {% if not loop.last %} &gt; {% endif %}
         {% endfor %}
     </div>
+    <label class="check"> <input type="checkbox"> 
+        <span>🌙</span> </label>
+</div>
+<!--Side menu bar-->
 <div class="wrapper">
     <nav class="sidebar">
-        <h3 class="text-white">SociaLens Ɑv.1.71</h3>
         <ul class="nav flex-column">
-            <li class="nav-item"><a href="/" class="nav-link {{ 'active' if request.path == '/' else '' }}">🏠 Home</a></li>
-            <li class="nav-item"><a href="/data-upload" class="nav-link {{ 'active' if request.path == '/data-upload' else '' }}">☁️ Data Upload</a></li>
-            <li class="nav-item"><a href="/explore-data" class="nav-link {{ 'active' if request.path == '/explore-data' else '' }}">🔎 Explore Data</a></li>
-            <li class="nav-item"><a href="/descriptive-statistics" class="nav-link {{ 'active' if request.path == '/descriptive-statistics' else '' }}">📊 Descriptive Statistics</a></li>
-            <li class="nav-item"><a href="/network-creator-files" class="nav-link {{ 'active' if request.path == '/network-creator-files' else '' }}">🕸️ Network Visualiser</a></li>
-            <li class="nav-item"><a href="/report-generator" class="nav-link {{ 'active' if request.path == '/report-generator' else '' }}">📄 Report Generator</a></li>
-            <hr>
+            <li class="nav-item">
+                <a href="/" class="nav-link {{ 'active' if request.path == '/' else '' }}">
+                    <span class="emoji">🏠</span> Home
+                </a>
+            </li>
         </ul>
+        <h5 class="text-primary">Data Utilities</h5> 
         <ul class="nav flex-column">
-            <li class="nav-item"><a href="/selector" class="nav-link {{ 'active' if request.path == '/selector' else '' }}">⤵️ Selector Demo</a></li>
-            <li class="nav-item"><a href="/login" class="nav-link {{ 'active' if request.path == '/login' else '' }}">👤 User Profile</a></li>
-            <li class="nav-item"><a href="/settings" class="nav-link {{ 'active' if request.path == '/settings' else '' }}">⚙️ Settings</a></li>
-            <li class="nav-item"><a href="/support" class="nav-link {{ 'active' if request.path == '/support' else '' }}">🛠️ Support</a></li>
-            <li class="nav-item"><a href="/feedback" class="nav-link {{ 'active' if request.path == '/feedback' else '' }}">💬 Feedback</a></li>
+            <li class="nav-item">
+                <a href="/data-upload" class="nav-link {{ 'active' if request.path == '/data-upload' else '' }}">
+                    <span class="emoji">☁️ </span> Upload Dataset
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/data-cleaner" class="nav-link {{ 'active' if request.path == '/data-cleaner' else '' }}">
+                    <span class="emoji">🛁 </span> Cleaner 
+                </a>
+            </li> 
+            <li class="nav-item">
+                <a href="/data-scraper" class="nav-link {{ 'active' if request.path == '/data-scraper' else '' }}">
+                    <span class="emoji">🕵️ </span> Scraper 
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/explore-data" class="nav-link {{ 'active' if request.path == '/explore-data' else '' }}">
+                    <span class="emoji">🔎 </span> Explore Data 
+                </a>
+            </li>            
+            <hr> 
         </ul>
-    </nav>    
+        <h5 class="text-primary">Analytics</h5>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="/descriptive-statistics" class="nav-link {{ 'active' if request.path == '/descriptive-statistics' else '' }}">
+                    <span class="emoji">📊 </span> Descriptive Statistics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/network-statistics" class="nav-link {{ 'active' if request.path == '/network-statistics' else '' }}">
+                    <span class="emoji">⚡️ </span> Network Statistics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/network-creator-files" class="nav-link {{ 'active' if request.path == '/network-creator-files' else '' }}">
+                    <span class="emoji">🕸️ </span> Network Visualiser
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/report-generator" class="nav-link {{ 'active' if request.path == '/report-generator' else '' }}">
+                    <span class="emoji">📄 </span> Report Generator
+                </a>
+            </li> 
+            <hr> 
+        </ul>
+        <h5 class="text-primary">Other</h5>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="/selector" class="nav-link {{ 'active' if request.path == '/selector' else '' }}">
+                    <span class="emoji">⤵️ </span> Selector Demo
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/login" class="nav-link {{ 'active' if request.path == '/login' else '' }}">
+                    <span class="emoji">👤 </span> User Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/settings" class="nav-link {{ 'active' if request.path == '/settings' else '' }}">
+                    <span class="emoji">⚙️ </span> Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/support" class="nav-link {{ 'active' if request.path == '/support' else '' }}">
+                    <span class="emoji">🛠️ </span> Support
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/feedback" class="nav-link {{ 'active' if request.path == '/feedback' else '' }}">
+                    <span class="emoji">💬 </span> Feedback
+                </a>
+            </li>
+        </ul>
+    </nav>   
     <div class="content">
         {% block content %}{% endblock %}
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const themeToggle = document.querySelector('.check input');
+
+    themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark'); // Store preference
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Load the saved theme preference on page load
+    const currentTheme = localStorage.getItem('theme') || 'light'; 
+    if (currentTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.checked = true;
+    }
+</script>
 </body>
 </html>

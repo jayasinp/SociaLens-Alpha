@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+    function sortTable(column) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("network-stats-table");
+        switching = true;
+        dir = "asc"; // Set the sorting direction to ascending by default
+
+        // Loop until no switching has been done
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            // Loop through all table rows (except the first, which contains the table headers)
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = parseFloat(rows[i].getElementsByTagName("td")[column].innerHTML);
+                y = parseFloat(rows[i + 1].getElementsByTagName("td")[column].innerHTML);
+
+                // Check if the two rows should switch places, based on the direction
+                if (dir == "asc") {
+                    if (x > y) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x < y) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                // If a switch has been marked, make the switch and mark that a switch has been done
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                // If no switching has been done and the direction is ascending, set the direction to descending and run the loop again
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+
+<div class="main-content-container">
+    <h1>Network Statistics Results for {{ filename }}</h1>
+    <div class="alert alert-info" role="alert">
+        🤞Click on a table header to sort the table by that column.
+        Click once for ascending order, click again for descending order.
+    </div>
+
+    {% for sheet in network_stats %}
+    
+    <table class="table table-striped" id="network-stats-table">
+        <thead>
+            <tr>
+                <th data-bs-toggle="tooltip" data-bs-placement="top" title="The node identifier" onclick="sortTable(0)">Node</th>
+                <th data-bs-toggle="tooltip" data-bs-placement="top" title="The number of edges connected to the node" onclick="sortTable(1)">Degree</th>
+                <th data-bs-toggle="tooltip" data-bs-placement="top" title="The fraction of nodes connected to the current node" onclick="sortTable(2)">Degree Centrality</th>
+                <th data-bs-toggle="tooltip" data-bs-placement="top" title="The fraction of shortest paths that pass through the node" onclick="sortTable(3)">Betweenness Centrality</th>
+                <th data-bs-toggle="tooltip" data-bs-placement="top" title="The reciprocal of the sum of the shortest path lengths from the node to all other nodes" onclick="sortTable(4)">Closeness Centrality</th>
+                <th data-bs-toggle="tooltip" data-bs-placement="top" title="The importance of a node in the network" onclick="sortTable(5)">Eigenvector Centrality</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for node, values in sheet.node_degrees.items() %}
+            <tr>
+                <td>{{ node }}</td>
+                <td>{{ values }}</td>
+                <td>{{ sheet.degree_centrality[node] }}</td>
+                <td>{{ sheet.betweenness_centrality[node] }}</td>
+                <td>{{ sheet.closeness_centrality[node] }}</td>
+                <td>{{ sheet.eigenvector_centrality[node] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Density: {{ sheet.density }}</p>
+    {% if 'diameter' in sheet %}
+    <p>Diameter: {{ sheet.diameter }}</p>
+    {% endif %}
+
+    {% endfor %}
+</div>
+
+<script>
+    // Enable Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+</script>
+
+{% endblock %}

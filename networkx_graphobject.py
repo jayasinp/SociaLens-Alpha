@@ -1,21 +1,8 @@
 from flask import Flask, request
 import pandas as pd
 import networkx as nx
-import json
-import os
 
 app = Flask(__name__)
-#Declan - Added this to save graph data to JSON Network folder
-def save_graph_to_json(graph, filename):
-    # Define the file path for saving the JSON file
-    json_file_path = os.path.join(app.config['NETWORK_FOLDER'], filename)
-    
-    # Convert the networkx graph to a JSON format
-    data = nx.node_link_data(graph)
-    
-    # Save the data to a JSON file
-    with open(json_file_path, 'w') as json_file:
-        json.dump(data, json_file)
 
 def create_graph_from_excel(file_path):
     # Read the Excel file into a Pandas DataFrame
@@ -33,8 +20,7 @@ def create_graph_from_excel(file_path):
         # Create a graph object from the DataFrame
         g = nx.from_pandas_edgelist(df, source=df.columns[0], target=df.columns[1])
         # You can store the graph object for future use here, such as saving it to a file or storing it in a database
-        save_graph_to_json(g, f"{sheet_name}.json")
-
+    
     return sheets_with_2_columns
 
 @app.route('/upload', methods=['POST'])

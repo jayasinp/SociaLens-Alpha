@@ -3,22 +3,18 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
+<div class="main-content-container"> 
 <h1>Settings</h1>
 <div class="container">
+  <div class="mb-3">
+    <p>You can change the theme by clicking the 🌙 in the top bar.</p>
+  </div>
   <form id="settingsForm" onsubmit="saveSettings()">
     <div class="mb-3">
       <label for="notifications" class="form-label">Notifications:</label>
       <select id="notifications" class="form-select">
         <option value="enabled">Enabled</option>
         <option value="disabled">Disabled</option>
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label for="theme" class="form-label">Theme:</label>
-      <select id="theme" class="form-select">
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
       </select>
     </div>
 
@@ -51,4 +47,5 @@
     loadSettings();
   };
 </script>
+</div>
 {% endblock %}
