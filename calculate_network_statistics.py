@@ -29,7 +29,7 @@ def calculate_network_statistics(file_path):
                 df.columns = ['Column1', 'Column2']  
                 print(f"Sheet '{sheet_name}': Headers were missing, assigned generic names")
 
-            # Create NetworkX graph
+            # Create NetworkX graph object
             G = nx.from_pandas_edgelist(df, source='Source', target='Target')
 
             sheet_stats = {
