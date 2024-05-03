@@ -481,6 +481,38 @@ def analyze(filename):
     results = analyze_file(file_path)
     return render_template('view_statistics.html', filename=filename, results=results, breadcrumbs=breadcrumbs)
 
+@app.route('/get-sheets', methods=['POST'])
+def get_sheets():
+    filename = request.form['filename']
+    try:
+        xls = pd.ExcelFile(os.path.join('uploads', filename))
+        sheets = xls.sheet_names
+        return jsonify({'sheets': sheets})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+@app.route('/get-statistics', methods=['POST'])
+def get_statistics():
+    try:
+        # Extract filename and sheetname from the request
+        filename = request.form['filename']
+        sheetname = request.form['sheetname']
+        
+        # Analyze the file and get statistics for the specified sheet
+        file_path = os.path.join('uploads', filename)
+        stats = analyze_file(file_path)[sheetname]
+
+        # Convert int64 values to native Python int
+        for column, values in stats.items():
+            for key, value in values.items():
+                if isinstance(value, pd.Int64Dtype.type):
+                    stats[column][key] = int(value)
+
+        return jsonify({'statistics': stats})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+
 # NETWORK VISUALISER ROUTES
 # creates a blank page work-in-progress
 @app.route('/network-visualiser')
@@ -570,18 +602,6 @@ def allowed_file(filename):
 def select_dataset():
     files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
     return render_template('selector.html', files=files)
-
-# ROUTE TO GET SHEET NAMES FROM EXCEL FILE 
-# ! Could be broken !
-@app.route('/get-sheets', methods=['POST'])
-def get_sheets():
-    filename = request.form['filename']
-    try:
-        xls = pd.ExcelFile(os.path.join('uploads', filename))
-        sheets = xls.sheet_names
-        return jsonify({'sheets': sheets})
-    except Exception as e:
-        return jsonify({'error': str(e)})
     
 # ROUTES FOR JSON UTILITIES
 # Route for listing JSON files
