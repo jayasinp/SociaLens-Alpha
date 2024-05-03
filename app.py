@@ -16,6 +16,7 @@ import reportlab
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
+from d3_translator import convert_network_to_json
 
 
 
@@ -56,6 +57,12 @@ os.makedirs(app.config['PROMPT_FILES_FOLDER'], exist_ok=True)
 NETWORK_PROMPT_FILES_FOLDER = 'network_prompt_files'
 app.config['NETWORK_PROMPT_FILES_FOLDER'] = 'network_prompt_files'  # Path for the output text files
 os.makedirs(app.config['NETWORK_PROMPT_FILES_FOLDER'], exist_ok=True)
+
+# Set the path for the network data folder
+NETWORK_FOLDER = 'network_objects'
+NETWORK_EXTENSIONS = {'json'}
+app.config['NETWORK_FOLDER'] = NETWORK_FOLDER
+os.makedirs(NETWORK_FOLDER, exist_ok=True)
 
 # INDEX ROUTE
 # go to home page
@@ -519,11 +526,53 @@ def get_statistics():
     
 
 # NETWORK VISUALISER ROUTES
-# creates a blank page work-in-progress
-@app.route('/network-visualiser')
+@app.route('/network-visualiser', methods=['GET', 'POST']) #Declan - Added this
 def network_visualiser():
+    if request.method=='POST':
+        selected_filename = request.form.get('selectedFile')
     breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
-    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs)
+    file_path = os.path.join(app.config['NETWORK_FOLDER'], selected_filename) 
+    if not os.path.exists(file_path):
+        flash("File does not exist.", 'danger')
+        return redirect(url_for('network-creator-files'))
+    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, selected_filename=selected_filename, file_path=file_path)
+
+# Route for network creator/selector
+@app.route('/network-creator-files', methods=['GET'])
+def network_creator_files():
+    breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
+    allowed_extensions = ['.xlsx', '.xls', '.csv']
+    update_files = []
+    for root, dirs, files in os.walk(app.config['RAW_DATA_FOLDER']):
+        for file in files:
+            if os.path.splitext(file)[1] in allowed_extensions:
+                update_files.append(os.path.relpath(os.path.join(root, file), app.config['RAW_DATA_FOLDER']))    
+    # Debugging: Print update_files to see if it's populated correctly
+    print("Update Files:", update_files)
+    
+    for file_path in update_files:
+        try:
+            convert_network_to_json(os.path.join(app.config['RAW_DATA_FOLDER'], file_path))
+        except Exception as e:
+            # Error handling: Log any exceptions that occur during conversion
+            print(f"Error converting {file}: {e}")
+    
+    files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')] 
+    return render_template('network_creator.html', breadcrumbs=breadcrumbs, files=files, update_files=update_files)
+
+
+# Route for getting Network data
+@app.route('/get_network_json_data/<filename>', methods=['GET'])
+def get_network_json_data(filename):
+    network_json_file_path = os.path.join(app.config['NETWORK_FOLDER'], filename)
+    
+    if not os.path.exists(network_json_file_path):
+        return jsonify({'error': 'File not found'}), 404
+    
+    with open(network_json_file_path, 'r') as file:
+        data = json.load(file)
+        
+    return jsonify(data)
 
 # REPORT GENERATOR ROUTE
 # Creates a blank UI work-in-progress

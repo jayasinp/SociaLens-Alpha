@@ -3,7 +3,263 @@
 {% block title %}Data Upload{% endblock %}
 
 {% block content %}
-<div class="main-content-container"> 
-<h1>Build Me!</h1>
+
+<style>
+    .highlighted-node {
+    stroke: white; /* Change stroke color for node */
+}
+    .highlighted-link {
+    stroke: #000; /* Change stroke color for links */
+    stroke-width: 3; /* Increase stroke width for links */
+}
+</style>
+<div class="main-content-container">
+
+    <div class="container">
+<div>
+    <h3>Network Visualiser</h3>
+    <h4 id="sheetName"></h4>
+        <!-- Dropdown menu for selecting node groups -->
+    <select id="select">
+        <option value="">Select a group...</option>
+        <!-- Options will be dynamically added here -->
+    </select>
+    <!-- Reload button to reset the entire graph -->
+    <button id="reloadButton">Reset Graph</button>
 </div>
+<!-- Add dropdown menu for file selection -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<!-- SVG container for the network visualization -->
+<svg id="network" style="background-color: rgb(195, 200, 221);">
+</svg>
+
+<script>
+ 
+
+//name a tooltip_in function to call when the mouse hovers a node
+tooltip_in = function(event, d) { // pass event and d to this function so that it can access d for our data
+    return tooltip
+        .html("<h5>ID: " + d.id + "</h5>") // add an html element with a header tag containing the name of the node. Other details can be added here
+        .style("opacity", "1") // make the tooltip visible on hover
+        .style("top", event.pageY + "px") // position the tooltip with its top at the same pixel location as the mouse on the screen
+        .style("left", event.pageX + "px") // position the tooltip just to the right of the mouse location
+        .duration(200);
+}
+// name a tooltip_out function to call when the mouse stops hovering
+tooltip_out = function() {
+    return tooltip
+        .transition()
+        .duration(200) // give the hide behavior a delay so that it doesn't jump around as the network moves
+        .style("opacity", "0"); // hide the tooltip when the mouse stops hovering
+}
+  // Define the zoom behavior
+  let zoom = d3.zoom()
+    .scaleExtent([0.3, 15]) // Set the zoom scale extent
+    .on("zoom", zoomed);
+// Set up SVG dimensions
+const width = window.innerWidth*0.75;
+const height = window.innerHeight*0.7;
+// Append the SVG object to the container and apply zoom behavior
+  let svg = d3.select("#network")
+    .attr('width', width)
+    .attr('height', height)
+    .call(zoom)
+    .append("g");
+
+// Fetch the selected filename
+const selectedFilename = "{{ selected_filename }}";
+// appenn the selected filename to the title
+document.getElementById("sheetName").innerHTML = "<p>Network for " + selectedFilename + "</p>";
+
+d3.json(`/get_network_json_data/${selectedFilename}`).then(function(data) {    
+    let node_data = data.nodes
+    let link_data = data.links
+    
+    
+    // Create force simulation
+    const simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.links).id(d => d.id))
+        .force('charge', d3.forceManyBody().strength(-20))
+        .force('center', d3.forceCenter(width / 2, height / 2));
+
+    // Create SVG marker for arrow #Declan: These ended up being quite big - maybe not neccessary
+    svg.append("defs").append("marker")
+        .attr("id", "arrow")
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 10)
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("class", "arrowHead")
+        .style('stroke', '#999')
+        .style('stroke-opacity', 0.8)
+        .style('fill', '#999');
+    // Create links
+    const link = svg.selectAll('.link')
+        .data(data.links)
+        .enter().append('line')
+        .attr('class', 'link')
+        .style('stroke', '#999')
+        .style('stroke-opacity', 0.8)
+        //.attr("marker-end", "url(#arrow)"); //#Declan: adds arrows to the end of links
+    
+    let color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    // Create nodes
+    const node = svg.selectAll('.node')
+        .data(data.nodes)
+        .enter().append('circle')
+        .attr('class', 'node')
+        .attr('r', 4)
+        //.attr('fill', 'blue')
+        .style("fill", function (d) { return color(d.group); })
+        .call(drag(simulation))
+        .on("click", clicked);
+        //.on("mouseover", tooltip_in) // when the mouse hovers a node, call the tooltip_in function to create the tooltip
+        //.on("mouseout", tooltip_out); // when the mouse stops hovering a node, call the tooltip_out function to get rid of the tooltip //https://observablehq.com/@mkane2/force-directed-graph-with-tooltip;
+        
+    // name a variable tooltip, and style it using css properties
+    tooltip = d3
+        .select("body")
+        .append("div") // the tooltip always "exists" as its own html div, even when not visible
+        .attr("class", "tooltip")
+        .style("position", "absolute") // the absolute position is necessary so that we can manually define its position later
+        .style("opacity", "0") // hide it from default at the start so it only appears on hover
+        .style("background-color", "white")
+        .style("font-family", "sans-serif")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("border", "1px solid grey")
+        .style("z-index", 9999); // Set a high z-index value to ensure it appears on top;
+
+    // Add drag behavior
+    function drag(simulation) {
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+            tooltip_out();
+        }
+
+        function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        }
+
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+        }
+        
+        return d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended);
+    }
+    // Add tick function for updating positions
+    simulation.on('tick', () => {
+        link.attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        node.attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+
+    
+    });
+    // Create a selection for the dropdown menu
+let select = d3.select("#select");
+
+// Fetch unique groups from the node data
+let groups = [...new Set(node_data.map(d => d.group))];
+
+// Add an option for each group to the dropdown menu
+select.selectAll("option")
+    .data(groups)
+    .enter()
+    .append("option")
+    .attr("value", d => d) // Set the value of each option to the group value
+    .text(d => "Group " + d); // Set the text of each option to indicate the group
+
+// Add change event listener to the dropdown menu
+select.on("change", function() {
+    // Get the selected group value
+    let selectedGroup = this.value;
+
+    // Reset the graph if "No Selection" is chosen
+    if (selectedGroup === "") {
+    // Clear any existing filtering and reset the visualization to its original state
+    resetGraph();
+    return; // Exit the function early
+}
+
+    // Filter the nodes based on the selected group
+    let filteredNodes = node_data.filter(d => d.group == selectedGroup);
+
+    // Perform actions with the filtered nodes (e.g., update node colors)
+    // Example: Change fill color based on the group
+    node.style("fill", d => d.group == selectedGroup ? "blue" : "gray");
+    // change stroke colour of links based on group
+    link.style("stroke", d => d.source.group == selectedGroup ? "blue" : "gray");
+});
+// Function to reset the graph to its original state
+// Select the reload button
+let reloadButton = document.getElementById("reloadButton");
+
+// Add click event listener to the reload button
+reloadButton.addEventListener("click", function() {
+    // Reset the entire graph
+    resetGraph();
+});
+
+// Function to reset the graph to its original state
+function resetGraph() {
+    // Clear any existing filtering and reset the visualization to its original state
+    // For example, you can reload the page to reset the entire graph
+    location.reload();
+}
+    // Attach click event listener to the nodes
+    function clicked(event, d) {
+    // Prevent the default click action
+    if (event.defaultPrevented) return; // dragged
+
+    // log click in console
+    console.log("Clicked on node: " + d.id);
+    // Remove highlight from previously highlighted nodes and links
+    node.classed("highlighted-node", false);
+    link.style("stroke", "#999").classed("highlighted-link", false);
+
+    // Highlight the clicked node
+    d3.select(this).classed("highlighted-node", true);
+
+    // Find the links associated with the clicked node
+    var clickedNodeLinks = link.filter(function(link) {
+        return link.source === d || link.target === d; //#Declan: remove commented bit, this created a bug
+    });
+
+    // Highlight the links associated with the clicked node
+    clickedNodeLinks.style("stroke", "#000").classed("highlighted-link", true);
+
+    // Show tooltip for the clicked node
+    tooltip_in(event, d);
+}
+});
+
+
+// Zoomed function to update SVG transform
+function zoomed(event) {
+svg.attr("transform", event.transform);
+tooltip_out();
+}
+</script>
+    </div>
+</div>
+
 {% endblock %}
+
