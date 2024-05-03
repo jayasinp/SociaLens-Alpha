@@ -3,57 +3,155 @@
 {% block title %}Data Upload{% endblock %}
 
 {% block content %}
-<div class="main-content-container"> 
+<div class="main-content-container">
+<h1>Report Generator</h1>
 <div class="container mt-5 mb-5 d-flex justify-content-center">
     <div class="card px-1 py-4">
         <div class="card-body">
-            <h6 class="card-title mb-3">Report Output Type</h6>
-            <div class="d-flex flex-row"> <label class="radio mr-1"> <input type="radio" name="add" value="anz" checked> <span> <i class="fa fa-user"></i> PDF </span> </label> <label class="radio"> <input type="radio" name="add" value="add"> <span> <i class="fa fa-plus-circle"></i> Word / Docx </span> </label> </div>
-            <h6 class="information mt-4">Please provide following information to generate your report</h6>
+            <h6 class="information mt-4">Please select a dataset:</h6>
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="form-group">
-                            <select class="form-select" aria-label="Default select example">
+                    <form id="report-form" method="POST" action="/generate_report">
+                        <div class="form-group">
+                            <select class="form-select" aria-label="Default select example" id="dataset-select" name="dataset">
                                 <option selected>Select Dataset</option>
-                                {% for file in files %}
-                                <option value="{{ file.name }}">{{ file.name }}</option>
-                                {% endfor %}
-                              </select>       
-                    </div>
-                    <br>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="form-group">
-                            <div class="card-body text-center">
-                                <h6 class="card-title mb-3">Select Report Outputs</h6>
-                                <hr class="mb-30">
-                
-                                <label class="check">
-                                  <input type="checkbox" checked>
-                                  <span>Descriptive Statistics</span>
-                                </label>
-                                <label class="check">
-                                  <input type="checkbox">
-                                  <span>Network Statistics</span>
-                                </label>
-                
-                                <label class="check">
-                                  <input type="checkbox">
-                                  <span>EGRM</span>
-                                </label>
-                
-                                <label class="check">
-                                  <input type="checkbox">
-                                  <span>ALAAM</span>
-                                </label>
+                            </select>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <h6>Please select a sheet:</h6>
+                            <select class="form-select" aria-label="Default select example" id="sheet-select" name="sheet">
+                                <option selected>Select Sheet</option>
+                            </select>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <h6>Please select relevant descriptive statistics:</h6>
+                            <div id="statistics-checkboxes">
+                                <!-- Statistics checkboxes will be added here dynamically -->
                             </div>
                         </div>
-                    </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary btn-block confirm-button">Generate PDF Report!</button>
+                    </form>
                 </div>
             </div>
-            <button class="btn btn-primary btn-block confirm-button">Print Report!</button>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch available datasets from Flask endpoint
+        fetch('/get_available_datasets')
+            .then(response => response.json())
+            .then(data => {
+                // Populate the dataset dropdown menu with dataset names
+                const datasetSelect = document.getElementById('dataset-select');
+                datasetSelect.innerHTML = ''; // Clear existing options
+                data.forEach(dataset => {
+                    const option = document.createElement('option');
+                    option.value = dataset;
+                    option.textContent = dataset;
+                    datasetSelect.appendChild(option);
+                });
+  
+                // Fetch available sheets for the first dataset
+                if (data.length > 0) {
+                    fetch(`/get_available_sheets/${data[0]}`)
+                        .then(response => response.json())
+                        .then(sheets => {
+                            // Populate the sheet dropdown menu with sheet names
+                            const sheetSelect = document.getElementById('sheet-select');
+                            sheetSelect.innerHTML = ''; // Clear existing options
+                            sheets.forEach(sheet => {
+                                const option = document.createElement('option');
+                                option.value = sheet;
+                                option.textContent = sheet;
+                                sheetSelect.appendChild(option);
+                            });
+  
+                            // Fetch available statistics for the first dataset and sheet
+                            updateStatisticsCheckboxes(data[0], sheets[0]);
+                        })
+                        .catch(error => console.error('Error fetching available sheets:', error));
+                }
+            })
+            .catch(error => console.error('Error fetching available datasets:', error));
+  
+        // Event listener for dataset selection change
+        document.getElementById('dataset-select').addEventListener('change', function() {
+            const selectedDataset = this.value;
+            // Fetch available sheets for the selected dataset
+            fetch(`/get_available_sheets/${selectedDataset}`)
+                .then(response => response.json())
+                .then(sheets => {
+                    // Populate the sheet dropdown menu with sheet names
+                    const sheetSelect = document.getElementById('sheet-select');
+                    sheetSelect.innerHTML = ''; // Clear existing options
+                    sheets.forEach(sheet => {
+                        const option = document.createElement('option');
+                        option.value = sheet;
+                        option.textContent = sheet;
+                        sheetSelect.appendChild(option);
+                    });
+  
+                    // Fetch available statistics for the selected dataset and the first sheet
+                    if (sheets.length > 0) {
+                        updateStatisticsCheckboxes(selectedDataset, sheets[0]);
+                    }
+                })
+                .catch(error => console.error('Error fetching available sheets:', error));
+        });
+  
+        // Event listener for sheet selection change
+        document.getElementById('sheet-select').addEventListener('change', function() {
+            const selectedDataset = document.getElementById('dataset-select').value;
+            const selectedSheet = this.value;
+            // Fetch available statistics for the selected dataset and sheet
+            updateStatisticsCheckboxes(selectedDataset, selectedSheet);
+        });
+    });
+  
+// Function to fetch available statistics and update checkboxes
+function updateStatisticsCheckboxes(dataset, sheet) {
+    fetch(`/get_available_statistics/${dataset}/${sheet}`)
+        .then(response => response.json())
+        .then(statistics => {
+            const statisticsCheckboxes = document.getElementById('statistics-checkboxes');
+            statisticsCheckboxes.innerHTML = ''; // Clear existing checkboxes
+            
+            // Define the order of statistics
+            const orderedStatistics = [
+                'Mean',
+                'Median',
+                'Mode',
+                'Standard Deviation',
+                'Variance',
+                'Skewness',
+                'Kurtosis'
+            ];
+            
+            // Filter statistics array to maintain the desired order
+            const orderedStats = orderedStatistics.filter(stat => statistics.includes(stat));
+            
+            orderedStats.forEach(statistic => {
+                const checkboxLabel = document.createElement('label');
+                checkboxLabel.classList.add('check');
+                const checkboxInput = document.createElement('input');
+                checkboxInput.type = 'checkbox';
+                checkboxInput.checked = false; // Default all checkboxes to unchecked
+                checkboxInput.name = 'available_statistics[]'; // Set the name attribute
+                checkboxInput.value = statistic; // Set the value attribute
+                const span = document.createElement('span');
+                span.textContent = statistic;
+                checkboxLabel.appendChild(checkboxInput);
+                checkboxLabel.appendChild(span);
+                statisticsCheckboxes.appendChild(checkboxLabel);
+            });
+        })
+        .catch(error => console.error('Error fetching available statistics:', error));
+    }
+</script>
 </div>
-{% endblock %}
+  {% endblock %}

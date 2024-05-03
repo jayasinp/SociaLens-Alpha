@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask import session
+from flask import send_file
 from werkzeug.utils import secure_filename
 import requests
 from bs4 import BeautifulSoup
@@ -11,6 +12,10 @@ from descriptive_statistics import analyze_file
 from calculate_network_statistics import calculate_network_statistics
 from ergm import process_file
 from chatbot import talktogpt
+import reportlab
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
 
 
 
@@ -533,6 +538,128 @@ def report_generator():
             'name': filename,
         })
     return render_template('report_generator.html', breadcrumbs=breadcrumbs)
+
+@app.route('/get_available_datasets')
+def get_available_datasets():
+    files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    return jsonify(files)
+
+@app.route('/get_available_sheets/<dataset>')
+def get_available_sheets(dataset):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], dataset)
+    if not os.path.exists(file_path):
+        return jsonify([])  # Return an empty list if the file doesn't exist
+    
+    # Check the file extension and read accordingly
+    if dataset.endswith(('.xlsx', '.xls')):
+        # Read all sheets; each sheet's name is added to a list
+        xls = pd.ExcelFile(file_path)
+        sheets = xls.sheet_names
+    elif dataset.endswith('.csv'):
+        # For CSV files, there's only one sheet, so return a list containing 'CSV'
+        sheets = ['CSV']
+    else:
+        return jsonify([])  # Unsupported file format, return an empty list
+
+    return jsonify(sheets)
+
+def get_numeric_columns(df):
+    return df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+
+@app.route('/get_available_statistics/<dataset>/<sheet>')
+def get_available_statistics(dataset, sheet):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], dataset)
+    if not os.path.exists(file_path):
+        return jsonify([])  # Return an empty list if the file doesn't exist
+    
+    # Check the file extension and read accordingly
+    if dataset.endswith(('.xlsx', '.xls')):
+        # Read the specific sheet to get column names
+        xls = pd.ExcelFile(file_path)
+        df = pd.read_excel(xls, sheet)
+    elif dataset.endswith('.csv'):
+        # For CSV files, read the specific sheet
+        df = pd.read_csv(file_path)
+    else:
+        return jsonify([])  # Unsupported file format, return an empty list
+    
+    # Analyze the dataset to determine available statistics
+    available_statistics = []
+    numeric_columns = df.select_dtypes(include=['float64', 'int64'])
+    for column in numeric_columns:
+        available_statistics.append('Mean')
+        available_statistics.append('Median')
+        available_statistics.append('Mode')
+        available_statistics.append('Standard Deviation')
+        available_statistics.append('Variance')
+        available_statistics.append('Skewness')
+        available_statistics.append('Kurtosis')
+        # Additional statistics can be added based on your requirements
+    
+    # Remove duplicates and return the list of available statistics
+    available_statistics = list(set(available_statistics))
+    
+    return jsonify(available_statistics)
+
+@app.route('/generate_report', methods=['POST'])
+def generate_report():
+    # Get selected dataset, sheet, and ticked statistics from the POST request
+    selected_dataset = request.form['dataset']
+    selected_sheet = request.form['sheet']
+    selected_statistics = request.form.getlist('available_statistics[]')  # Assuming checkboxes are named 'statistics[]'
+
+    # Fetch the statistical values from the JSON file based on selected_dataset and selected_sheet
+    json_filename = selected_dataset.replace('.', '_') + '.json'
+    json_file_path = os.path.join(app.config['JSON_FOLDER'], json_filename)
+    
+    if not os.path.exists(json_file_path):
+        flash("JSON file not found for the selected dataset.", 'danger')
+        return redirect(url_for('report_generator'))
+
+    with open(json_file_path, 'r') as file:
+        data = json.load(file)
+
+    # Filter the data to include only selected statistics
+    selected_stats = {}
+    for column, stats in data[selected_sheet].items():
+        if 'ID' not in column and 'id' not in column:
+            selected_stats[column] = {stat: value for stat, value in stats.items() if stat in selected_statistics}
+
+    # Construct report content using ReportLab
+    doc = SimpleDocTemplate("report.pdf", pagesize=letter)
+    styles = getSampleStyleSheet()
+    report_content = []
+
+    # Add report title
+    report_content.append(Paragraph(f"Report for {selected_dataset}", styles['Title']))
+
+    # Add selected dataset, sheet, and statistics
+    # report_content.append(Paragraph(f"<strong>Selected Dataset:</strong> {selected_dataset}", styles['Normal']))
+    # report_content.append(Paragraph(f"<strong>Selected Sheet:</strong> {selected_sheet}", styles['Normal']))
+    # report_content.append(Paragraph(f"<strong>Selected Statistics:</strong> {', '.join(selected_statistics)}", styles['Normal']))
+    # report_content.append(Paragraph(f" ", styles['Normal']))
+
+    # Add statistics table
+    table_data = [["Column"] + selected_statistics]
+    for column, stats in selected_stats.items():
+        row = [str(column)] + [str(round(value, 2)) if isinstance(value, (int, float)) else str(value) for value in stats.values()]
+        table_data.append(row)
+
+    # Create table
+    table = Table(table_data)
+    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), '#f2f2f2'),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), '#333'),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('GRID', (0, 0), (-1, -1), 1, '#dddddd')]))
+
+    # Add table to content
+    report_content.append(table)
+
+    # Build PDF
+    doc.build(report_content)
+
+    # Send the generated PDF file back to the client for download
+    return send_file("report.pdf", as_attachment=True)
 
 # ANCILLIARY ROUTES LOW PRIORITY
 @app.route('/login')
