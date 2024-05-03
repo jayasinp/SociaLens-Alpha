@@ -280,7 +280,7 @@ def chat_interface():
         return redirect(url_for('chatbot'))
 
     # Construct the full path to the file
-    full_file_path = os.path.join(file_path, selector)  # Corrected to use full_file_path
+    full_file_path = os.path.join(file_path, file, selector)
     if os.path.exists(full_file_path):
         # Read the specified file
         try:
