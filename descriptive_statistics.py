@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 def analyze_file(file_path):
-    base_path = 'prompt_files'
+    base_path = 'descriptive'
     output = {}
 
     # Extract filename without extension to use as a folder name
@@ -28,7 +28,7 @@ def analyze_file(file_path):
             numeric_columns = df.select_dtypes(include=['float64', 'int64'])
 
             # Creating filename with prefix of the dataset name and the sheet name
-            file_name = f"{dataset_name}_{sheet_name}_stats.txt"
+            file_name = f"{dataset_name}_{sheet_name}.txt"
             full_file_path = os.path.join(folder_path, file_name)
 
             with open(full_file_path, 'w') as file:

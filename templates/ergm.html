@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="main-content-container">
+    <h1>ERGM Analysis</h1>
+    <form action="{{ url_for('ergm') }}" method="post">
+        <div class="mb-3">
+            <label for="selectedFolder" class="form-label">Select a Folder:</label>
+            <select class="form-select" id="selectedFolder" name="selectedFolder" onchange="updateFiles()">
+                <option value="">--Select a Folder--</option>
+                {% for folder in folders %}
+                <option value="{{ folder }}">{{ folder }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="selectedFile" class="form-label">Select a File:</label>
+            <select class="form-select" id="selectedFile" name="selectedFile" disabled>
+                <option value="">--Select a File--</option>
+                <!-- Files will be enabled and populated based on folder selection -->
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Compute ERGM</button>
+    </form>
+</div>
+<script>
+function updateFiles() {
+    var folder = document.getElementById('selectedFolder').value;
+    var fileSelect = document.getElementById('selectedFile');
+    if (folder) {
+        fetch(`/api/files/${folder}`)
+            .then(response => response.json())
+            .then(data => {
+                fileSelect.innerHTML = '';
+                data.files.forEach(file => {
+                    var option = document.createElement('option');
+                    option.value = file;
+                    option.textContent = file;
+                    fileSelect.appendChild(option);
+                });
+                fileSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error loading files:', error);
+                fileSelect.innerHTML = '<option>Error loading files</option>';
+                fileSelect.disabled = true;
+            });
+    } else {
+        fileSelect.innerHTML = '<option>--Select a File--</option>';
+        fileSelect.disabled = true;
+    }
+}
+</script>
+{% endblock %}
