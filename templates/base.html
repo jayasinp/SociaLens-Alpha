@@ -39,7 +39,7 @@
 <!--Top navigation bar for SociaLens logo and the Breadcrumbs for position awareness-->
 <div class="top-bar d-flex justify-content-between align-items-center" style="height: 60px;">
     <h3 class="header-title">
-        Socia<span class="lens">Lens</span> <span class="version">Ɑv.1.71</span> 
+        Socia<span class="lens">Lens</span> <span class="version">Ɑv.1.91</span> 
     </h3>
     <div class="breadcrumbs"> 
         {% for label, url in breadcrumbs %}
@@ -97,8 +97,18 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="/ergm" class="nav-link {{ 'active' if request.path == '/network-statistics' else '' }}">
+                    <span class="emoji">𐄳 </span> ERGM
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="/network-visualiser" class="nav-link {{ 'active' if request.path == '/network-visualiser' else '' }}">
                     <span class="emoji">🕸️ </span> Network Visualiser
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/chatbot" class="nav-link {{ 'active' if request.path == '/chatbot' else '' }}">
+                    <span class="emoji">🤖 </span> Chatbot
                 </a>
             </li>
             <li class="nav-item">

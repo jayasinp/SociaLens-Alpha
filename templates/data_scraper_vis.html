@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="main-content-container">
+    <h3>Network Visualization for <a href="{{ url }}">{{ url }}</a></h3>
+    <div class="alert alert-info" role="alert">
+        🕵️ The scraped data has been saved as JSON!
+    </div>
+    <div id="cy" style="height: 80vh; width: 100%;"></div>
+</div>
+
+<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+<script>
+    const url = '{{ url }}'; // Get the URL from the Flask template
+    console.log("Requesting JSON for URL:", url); // Log the URL for debugging
+    fetch('/network.json?url=' + encodeURIComponent(url))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Data received:", data); // Log data to see the structure
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: data,
+                style: [
+                    { selector: 'node', style: {'background-color': '#666', 'label': 'data(label)'} },
+                    { selector: 'edge', style: {'width': 3, 'line-color': '#ccc'} }
+                ],
+                layout: {
+                    name: 'cose',
+                    fit: true, // Make sure the graph fits in the viewport on load
+                    padding: 10 // Add some padding to keep nodes from touching the edges
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading the network data:', error); // Log errors
+        });
+</script>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot Setup{% endblock %}
+
+{% block content %}
+<div class="main-content-container">
+<div class="container">
+    <h1>Select Dataset and Sheet for Chat</h1>
+    <div id="file-and-sheet-selection">
+        <h2>Choose Dataset and Sheet</h2>
+        <label for="file-select">Choose a dataset:</label>
+        <select id="file-select" name="file-select" onchange="updateSheets()">
+            <option value="">Select a file...</option>
+            {% for file in files %}
+            <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+
+        <label for="sheet-select">Choose a sheet:</label>
+        <select id="sheet-select" name="sheet-select">
+            <option value="">Select a sheet...</option>
+        </select>
+        <br><br>
+
+        <label for="filePath-select">Are you wanting to discuss network or descriptive stats?</label>
+        <select id="filePath-select" name="filePath-select" onchange="enableChat()">
+            <option value="">Please Select</option>
+            <option value="network">Network</option>
+            <option value="descriptive">Descriptive</option>
+        </select>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function updateSheets() {
+    var fileName = $('#file-select').val();
+    if (fileName) {
+        $.ajax({
+            url: '/get-sheets',
+            type: 'POST',
+            data: { filename: fileName },
+            success: function(response) {
+                $('#sheet-select').empty();
+                $('#sheet-select').append('<option value="">Select a sheet...</option>');
+                response.sheets.forEach(function(sheet) {
+                    $('#sheet-select').append('<option value="' + sheet + '">' + sheet + '</option>');
+                });
+            }
+        });
+    }
+}
+
+function enableChat() {
+    var sheetName = $('#sheet-select').val();
+    var fileName= $('#file-select').val()
+    var filePath= $('#filePath-select').val()
+    if (sheetName) {
+        window.location.href = "/chat-interface?file=" +fileName + "&sheet=" + sheetName+ "&filePath=" + filePath;
+    }
+}
+</script>
+</div>
+{% endblock %}
