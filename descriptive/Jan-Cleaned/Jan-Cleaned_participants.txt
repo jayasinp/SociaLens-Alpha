@@ -1,0 +1,80 @@
+Statistics for column 'Participant-ID' in sheet 'participants':
+The Mean for column 'Participant-ID' is 32478.0
+The Median for column 'Participant-ID' is 32478.0
+The Mode for column 'Participant-ID' is [32391, 32392, 32393, 32394, 32395, 32396, 32397, 32398, 32399, 32400, 32401, 32402, 32403, 32404, 32405, 32406, 32407, 32408, 32409, 32410, 32411, 32412, 32413, 32414, 32415, 32416, 32417, 32418, 32419, 32420, 32421, 32422, 32423, 32424, 32425, 32426, 32427, 32428, 32429, 32430, 32431, 32432, 32433, 32434, 32435, 32436, 32437, 32438, 32439, 32440, 32441, 32442, 32443, 32444, 32445, 32446, 32447, 32448, 32449, 32450, 32451, 32452, 32453, 32454, 32455, 32456, 32457, 32458, 32459, 32460, 32461, 32462, 32463, 32464, 32465, 32466, 32467, 32468, 32469, 32470, 32471, 32472, 32473, 32474, 32475, 32476, 32477, 32478, 32479, 32480, 32481, 32482, 32483, 32484, 32485, 32486, 32487, 32488, 32489, 32490, 32491, 32492, 32493, 32494, 32495, 32496, 32497, 32498, 32499, 32500, 32501, 32502, 32503, 32504, 32505, 32506, 32507, 32508, 32509, 32510, 32511, 32512, 32513, 32514, 32515, 32516, 32517, 32518, 32519, 32520, 32521, 32522, 32523, 32524, 32525, 32526, 32527, 32528, 32529, 32530, 32531, 32532, 32533, 32534, 32535, 32536, 32537, 32538, 32539, 32540, 32541, 32542, 32543, 32544, 32545, 32546, 32547, 32548, 32549, 32550, 32551, 32552, 32553, 32554, 32555, 32556, 32557, 32558, 32559, 32560, 32561, 32562, 32563, 32564, 32565]
+The Standard Deviation for column 'Participant-ID' is 50.66228051190221
+The Variance for column 'Participant-ID' is 2566.6666666666665
+The Skewness for column 'Participant-ID' is 0.0
+The Kurtosis for column 'Participant-ID' is -1.2000000000000002
+The Min for column 'Participant-ID' is 32391
+The Max for column 'Participant-ID' is 32565
+The 25th Percentile for column 'Participant-ID' is 32434.5
+The 50th Percentile for column 'Participant-ID' is 32478.0
+The 75th Percentile for column 'Participant-ID' is 32521.5
+The Count for column 'Participant-ID' is 175
+The Missing Values for column 'Participant-ID' is 0
+
+Statistics for column 'Perc_Effort' in sheet 'participants':
+The Mean for column 'Perc_Effort' is 50.74285714285714
+The Median for column 'Perc_Effort' is 53.0
+The Mode for column 'Perc_Effort' is [53]
+The Standard Deviation for column 'Perc_Effort' is 21.967508474367975
+The Variance for column 'Perc_Effort' is 482.5714285714287
+The Skewness for column 'Perc_Effort' is -0.3152657904582203
+The Kurtosis for column 'Perc_Effort' is -0.012224436847887876
+The Min for column 'Perc_Effort' is 0
+The Max for column 'Perc_Effort' is 97
+The 25th Percentile for column 'Perc_Effort' is 40.0
+The 50th Percentile for column 'Perc_Effort' is 53.0
+The 75th Percentile for column 'Perc_Effort' is 56.5
+The Count for column 'Perc_Effort' is 175
+The Missing Values for column 'Perc_Effort' is 0
+
+Statistics for column 'Attendance' in sheet 'participants':
+The Mean for column 'Attendance' is 90.21142857142857
+The Median for column 'Attendance' is 97.0
+The Mode for column 'Attendance' is [100]
+The Standard Deviation for column 'Attendance' is 13.849182959189687
+The Variance for column 'Attendance' is 191.79986863711
+The Skewness for column 'Attendance' is -1.4919091284049186
+The Kurtosis for column 'Attendance' is 0.8313260542831991
+The Min for column 'Attendance' is 54
+The Max for column 'Attendance' is 100
+The 25th Percentile for column 'Attendance' is 89.0
+The 50th Percentile for column 'Attendance' is 97.0
+The 75th Percentile for column 'Attendance' is 100.0
+The Count for column 'Attendance' is 175
+The Missing Values for column 'Attendance' is 0
+
+Statistics for column 'Perc_Academic' in sheet 'participants':
+The Mean for column 'Perc_Academic' is 51.32934131736527
+The Median for column 'Perc_Academic' is 51.0
+The Mode for column 'Perc_Academic' is [77.0]
+The Standard Deviation for column 'Perc_Academic' is 22.38234112289947
+The Variance for column 'Perc_Academic' is 500.9691941418367
+The Skewness for column 'Perc_Academic' is -0.08651664845366151
+The Kurtosis for column 'Perc_Academic' is -0.7822090288858488
+The Min for column 'Perc_Academic' is 2.0
+The Max for column 'Perc_Academic' is 97.0
+The 25th Percentile for column 'Perc_Academic' is 34.5
+The 50th Percentile for column 'Perc_Academic' is 51.0
+The 75th Percentile for column 'Perc_Academic' is 70.0
+The Count for column 'Perc_Academic' is 167
+The Missing Values for column 'Perc_Academic' is 8
+
+Statistics for column 'CompleteYears' in sheet 'participants':
+The Mean for column 'CompleteYears' is 1.9885714285714287
+The Median for column 'CompleteYears' is 1.0
+The Mode for column 'CompleteYears' is [0]
+The Standard Deviation for column 'CompleteYears' is 2.7957039526983194
+The Variance for column 'CompleteYears' is 7.815960591133006
+The Skewness for column 'CompleteYears' is 1.4964525963950033
+The Kurtosis for column 'CompleteYears' is 1.10835952516427
+The Min for column 'CompleteYears' is 0
+The Max for column 'CompleteYears' is 10
+The 25th Percentile for column 'CompleteYears' is 0.0
+The 50th Percentile for column 'CompleteYears' is 1.0
+The 75th Percentile for column 'CompleteYears' is 2.5
+The Count for column 'CompleteYears' is 175
+The Missing Values for column 'CompleteYears' is 0
+

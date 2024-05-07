@@ -1,0 +1,36 @@
+{
+    "nodes": [
+        {
+            "data": {
+                "id": "https://en.wikipedia.org/wiki/Category:Articles_with_too_few_wikilinks_from_April_2024",
+                "label": "Category:Articles_with_too_few_wikilinks_from_April_2024"
+            }
+        },
+        {
+            "data": {
+                "id": "https://en.wikipedia.org/wiki/Main_Page",
+                "label": "Main_Page"
+            }
+        },
+        {
+            "data": {
+                "id": "https://en.wikipedia.org/wiki/Main_Page",
+                "label": "Main_Page"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "data": {
+                "source": "https://en.wikipedia.org/wiki/Category:Articles_with_too_few_wikilinks_from_April_2024",
+                "target": "https://en.wikipedia.org/wiki/Main_Page"
+            }
+        },
+        {
+            "data": {
+                "source": "https://en.wikipedia.org/wiki/Category:Articles_with_too_few_wikilinks_from_April_2024",
+                "target": "https://en.wikipedia.org/wiki/Main_Page"
+            }
+        }
+    ]
+}

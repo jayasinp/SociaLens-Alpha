@@ -1,0 +1,432 @@
+Statistics for column 'Participant-ID' in sheet 'responses':
+The Mean for column 'Participant-ID' is 32478.67469879518
+The Median for column 'Participant-ID' is 32478.5
+The Mode for column 'Participant-ID' is [32392, 32393, 32394, 32395, 32397, 32398, 32399, 32400, 32401, 32402, 32403, 32404, 32405, 32406, 32407, 32408, 32409, 32410, 32411, 32412, 32413, 32414, 32415, 32416, 32417, 32418, 32419, 32420, 32421, 32422, 32423, 32424, 32425, 32426, 32427, 32428, 32429, 32430, 32431, 32432, 32433, 32434, 32435, 32436, 32437, 32438, 32439, 32440, 32441, 32442, 32443, 32444, 32445, 32446, 32447, 32448, 32449, 32450, 32451, 32452, 32453, 32454, 32455, 32456, 32457, 32458, 32459, 32460, 32462, 32464, 32465, 32467, 32468, 32469, 32470, 32471, 32472, 32473, 32474, 32475, 32476, 32477, 32478, 32479, 32480, 32481, 32482, 32483, 32484, 32485, 32486, 32488, 32489, 32490, 32491, 32492, 32493, 32494, 32495, 32496, 32497, 32498, 32499, 32502, 32503, 32504, 32505, 32506, 32507, 32508, 32509, 32510, 32511, 32512, 32513, 32514, 32515, 32516, 32517, 32518, 32519, 32520, 32521, 32522, 32523, 32524, 32526, 32527, 32528, 32529, 32530, 32531, 32532, 32533, 32534, 32535, 32536, 32537, 32538, 32539, 32540, 32541, 32542, 32543, 32544, 32545, 32546, 32547, 32548, 32549, 32550, 32551, 32552, 32553, 32554, 32555, 32556, 32557, 32558, 32559, 32560, 32561, 32562, 32563, 32564, 32565]
+The Standard Deviation for column 'Participant-ID' is 50.94681919680916
+The Variance for column 'Participant-ID' is 2595.5783862723624
+The Skewness for column 'Participant-ID' is 0.01046608593853917
+The Kurtosis for column 'Participant-ID' is -1.2440060338707086
+The Min for column 'Participant-ID' is 32392
+The Max for column 'Participant-ID' is 32565
+The 25th Percentile for column 'Participant-ID' is 32434.25
+The 50th Percentile for column 'Participant-ID' is 32478.5
+The 75th Percentile for column 'Participant-ID' is 32522.75
+The Count for column 'Participant-ID' is 166
+The Missing Values for column 'Participant-ID' is 0
+
+Statistics for column 'Manbox5_1' in sheet 'responses':
+The Mean for column 'Manbox5_1' is 2.427710843373494
+The Median for column 'Manbox5_1' is 2.0
+The Mode for column 'Manbox5_1' is [1]
+The Standard Deviation for column 'Manbox5_1' is 1.656269137331143
+The Variance for column 'Manbox5_1' is 2.743227455275648
+The Skewness for column 'Manbox5_1' is 0.9872746666560845
+The Kurtosis for column 'Manbox5_1' is -0.017224153589568303
+The Min for column 'Manbox5_1' is 1
+The Max for column 'Manbox5_1' is 7
+The 25th Percentile for column 'Manbox5_1' is 1.0
+The 50th Percentile for column 'Manbox5_1' is 2.0
+The 75th Percentile for column 'Manbox5_1' is 4.0
+The Count for column 'Manbox5_1' is 166
+The Missing Values for column 'Manbox5_1' is 0
+
+Statistics for column 'Manbox5_2' in sheet 'responses':
+The Mean for column 'Manbox5_2' is 1.7349397590361446
+The Median for column 'Manbox5_2' is 1.0
+The Mode for column 'Manbox5_2' is [1]
+The Standard Deviation for column 'Manbox5_2' is 1.3310678087537644
+The Variance for column 'Manbox5_2' is 1.771741511500548
+The Skewness for column 'Manbox5_2' is 2.215088570455824
+The Kurtosis for column 'Manbox5_2' is 4.686795412099828
+The Min for column 'Manbox5_2' is 1
+The Max for column 'Manbox5_2' is 7
+The 25th Percentile for column 'Manbox5_2' is 1.0
+The 50th Percentile for column 'Manbox5_2' is 1.0
+The 75th Percentile for column 'Manbox5_2' is 2.0
+The Count for column 'Manbox5_2' is 166
+The Missing Values for column 'Manbox5_2' is 0
+
+Statistics for column 'Manbox5_3' in sheet 'responses':
+The Mean for column 'Manbox5_3' is 1.9397590361445782
+The Median for column 'Manbox5_3' is 1.0
+The Mode for column 'Manbox5_3' is [1]
+The Standard Deviation for column 'Manbox5_3' is 1.455184233595778
+The Variance for column 'Manbox5_3' is 2.117561153705732
+The Skewness for column 'Manbox5_3' is 1.718414547358395
+The Kurtosis for column 'Manbox5_3' is 2.6106519583399996
+The Min for column 'Manbox5_3' is 1
+The Max for column 'Manbox5_3' is 7
+The 25th Percentile for column 'Manbox5_3' is 1.0
+The 50th Percentile for column 'Manbox5_3' is 1.0
+The 75th Percentile for column 'Manbox5_3' is 2.0
+The Count for column 'Manbox5_3' is 166
+The Missing Values for column 'Manbox5_3' is 0
+
+Statistics for column 'Manbox5_4' in sheet 'responses':
+The Mean for column 'Manbox5_4' is 1.8313253012048192
+The Median for column 'Manbox5_4' is 1.0
+The Mode for column 'Manbox5_4' is [1]
+The Standard Deviation for column 'Manbox5_4' is 1.3512667646676446
+The Variance for column 'Manbox5_4' is 1.8259218692953634
+The Skewness for column 'Manbox5_4' is 1.9076292333324714
+The Kurtosis for column 'Manbox5_4' is 3.2186211631538817
+The Min for column 'Manbox5_4' is 1
+The Max for column 'Manbox5_4' is 7
+The 25th Percentile for column 'Manbox5_4' is 1.0
+The 50th Percentile for column 'Manbox5_4' is 1.0
+The 75th Percentile for column 'Manbox5_4' is 2.0
+The Count for column 'Manbox5_4' is 166
+The Missing Values for column 'Manbox5_4' is 0
+
+Statistics for column 'Manbox5_5' in sheet 'responses':
+The Mean for column 'Manbox5_5' is 2.036144578313253
+The Median for column 'Manbox5_5' is 1.0
+The Mode for column 'Manbox5_5' is [1]
+The Standard Deviation for column 'Manbox5_5' is 1.7123139271263998
+The Variance for column 'Manbox5_5' is 2.932018985031034
+The Skewness for column 'Manbox5_5' is 1.7027371828479256
+The Kurtosis for column 'Manbox5_5' is 1.8684228390321098
+The Min for column 'Manbox5_5' is 1
+The Max for column 'Manbox5_5' is 7
+The 25th Percentile for column 'Manbox5_5' is 1.0
+The 50th Percentile for column 'Manbox5_5' is 1.0
+The 75th Percentile for column 'Manbox5_5' is 2.0
+The Count for column 'Manbox5_5' is 166
+The Missing Values for column 'Manbox5_5' is 0
+
+Statistics for column 'isolated' in sheet 'responses':
+The Mean for column 'isolated' is 2.4216867469879517
+The Median for column 'isolated' is 2.0
+The Mode for column 'isolated' is [1]
+The Standard Deviation for column 'isolated' is 1.5225216875816998
+The Variance for column 'isolated' is 2.318072289156627
+The Skewness for column 'isolated' is 1.042357262412323
+The Kurtosis for column 'isolated' is 0.2654781608159751
+The Min for column 'isolated' is 1
+The Max for column 'isolated' is 7
+The 25th Percentile for column 'isolated' is 1.0
+The 50th Percentile for column 'isolated' is 2.0
+The 75th Percentile for column 'isolated' is 3.0
+The Count for column 'isolated' is 166
+The Missing Values for column 'isolated' is 0
+
+Statistics for column 'WomenDifferent' in sheet 'responses':
+The Mean for column 'WomenDifferent' is 4.596385542168675
+The Median for column 'WomenDifferent' is 5.0
+The Mode for column 'WomenDifferent' is [4]
+The Standard Deviation for column 'WomenDifferent' is 1.887691922934173
+The Variance for column 'WomenDifferent' is 3.5633807959109163
+The Skewness for column 'WomenDifferent' is -0.3758835843417078
+The Kurtosis for column 'WomenDifferent' is -0.8603567747349143
+The Min for column 'WomenDifferent' is 1
+The Max for column 'WomenDifferent' is 7
+The 25th Percentile for column 'WomenDifferent' is 4.0
+The 50th Percentile for column 'WomenDifferent' is 5.0
+The 75th Percentile for column 'WomenDifferent' is 6.0
+The Count for column 'WomenDifferent' is 166
+The Missing Values for column 'WomenDifferent' is 0
+
+Statistics for column 'Manbox5_overall' in sheet 'responses':
+The Mean for column 'Manbox5_overall' is 1.9939759036144578
+The Median for column 'Manbox5_overall' is 1.6
+The Mode for column 'Manbox5_overall' is [1.0]
+The Standard Deviation for column 'Manbox5_overall' is 1.0597712043061234
+The Variance for column 'Manbox5_overall' is 1.1231150054764512
+The Skewness for column 'Manbox5_overall' is 1.0716859726406447
+The Kurtosis for column 'Manbox5_overall' is 0.5662355869893667
+The Min for column 'Manbox5_overall' is 1.0
+The Max for column 'Manbox5_overall' is 5.8
+The 25th Percentile for column 'Manbox5_overall' is 1.0
+The 50th Percentile for column 'Manbox5_overall' is 1.6
+The 75th Percentile for column 'Manbox5_overall' is 2.75
+The Count for column 'Manbox5_overall' is 166
+The Missing Values for column 'Manbox5_overall' is 0
+
+Statistics for column 'language' in sheet 'responses':
+The Mean for column 'language' is 0.27710843373493976
+The Median for column 'language' is 0.0
+The Mode for column 'language' is [0]
+The Standard Deviation for column 'language' is 0.44892472236744047
+The Variance for column 'language' is 0.20153340635268352
+The Skewness for column 'language' is 1.0051117475009612
+The Kurtosis for column 'language' is -1.0019692243134766
+The Min for column 'language' is 0
+The Max for column 'language' is 1
+The 25th Percentile for column 'language' is 0.0
+The 50th Percentile for column 'language' is 0.0
+The 75th Percentile for column 'language' is 1.0
+The Count for column 'language' is 166
+The Missing Values for column 'language' is 0
+
+Statistics for column 'Masculinity_contrained' in sheet 'responses':
+The Mean for column 'Masculinity_contrained' is 2.8478915662650603
+The Median for column 'Masculinity_contrained' is 2.75
+The Mode for column 'Masculinity_contrained' is [3.0]
+The Standard Deviation for column 'Masculinity_contrained' is 1.1324330525350694
+The Variance for column 'Masculinity_contrained' is 1.2824046184738955
+The Skewness for column 'Masculinity_contrained' is 0.44248540998258123
+The Kurtosis for column 'Masculinity_contrained' is 0.09120795781369262
+The Min for column 'Masculinity_contrained' is 1.0
+The Max for column 'Masculinity_contrained' is 6.25
+The 25th Percentile for column 'Masculinity_contrained' is 2.0
+The 50th Percentile for column 'Masculinity_contrained' is 2.75
+The 75th Percentile for column 'Masculinity_contrained' is 3.5
+The Count for column 'Masculinity_contrained' is 166
+The Missing Values for column 'Masculinity_contrained' is 0
+
+Statistics for column 'GrowthMindset' in sheet 'responses':
+The Mean for column 'GrowthMindset' is 6.906626506024097
+The Median for column 'GrowthMindset' is 7.0
+The Mode for column 'GrowthMindset' is [10.5]
+The Standard Deviation for column 'GrowthMindset' is 2.4726414667907624
+The Variance for column 'GrowthMindset' is 6.113955823293173
+The Skewness for column 'GrowthMindset' is -0.2082304306900502
+The Kurtosis for column 'GrowthMindset' is -0.9467788711754817
+The Min for column 'GrowthMindset' is 1.5
+The Max for column 'GrowthMindset' is 10.5
+The 25th Percentile for column 'GrowthMindset' is 5.0
+The 50th Percentile for column 'GrowthMindset' is 7.0
+The 75th Percentile for column 'GrowthMindset' is 9.0
+The Count for column 'GrowthMindset' is 166
+The Missing Values for column 'GrowthMindset' is 0
+
+Statistics for column 'COVID' in sheet 'responses':
+The Mean for column 'COVID' is 3.891566265060241
+The Median for column 'COVID' is 4.0
+The Mode for column 'COVID' is [2, 5]
+The Standard Deviation for column 'COVID' is 1.981808468211103
+The Variance for column 'COVID' is 3.9275648046732385
+The Skewness for column 'COVID' is 0.0528221260674233
+The Kurtosis for column 'COVID' is -1.2180510882855746
+The Min for column 'COVID' is 1
+The Max for column 'COVID' is 7
+The 25th Percentile for column 'COVID' is 2.0
+The 50th Percentile for column 'COVID' is 4.0
+The 75th Percentile for column 'COVID' is 5.75
+The Count for column 'COVID' is 166
+The Missing Values for column 'COVID' is 0
+
+Statistics for column 'criticises' in sheet 'responses':
+The Mean for column 'criticises' is 4.5
+The Median for column 'criticises' is 5.0
+The Mode for column 'criticises' is [5]
+The Standard Deviation for column 'criticises' is 1.753783788201264
+The Variance for column 'criticises' is 3.0757575757575757
+The Skewness for column 'criticises' is -0.3241134116041972
+The Kurtosis for column 'criticises' is -0.7118721005941953
+The Min for column 'criticises' is 1
+The Max for column 'criticises' is 7
+The 25th Percentile for column 'criticises' is 3.0
+The 50th Percentile for column 'criticises' is 5.0
+The 75th Percentile for column 'criticises' is 6.0
+The Count for column 'criticises' is 166
+The Missing Values for column 'criticises' is 0
+
+Statistics for column 'MenBetterSTEM' in sheet 'responses':
+The Mean for column 'MenBetterSTEM' is 2.0843373493975905
+The Median for column 'MenBetterSTEM' is 1.0
+The Mode for column 'MenBetterSTEM' is [1]
+The Standard Deviation for column 'MenBetterSTEM' is 1.4159679783839356
+The Variance for column 'MenBetterSTEM' is 2.0049653158086893
+The Skewness for column 'MenBetterSTEM' is 1.1067737747821143
+The Kurtosis for column 'MenBetterSTEM' is 0.30474573024328855
+The Min for column 'MenBetterSTEM' is 1
+The Max for column 'MenBetterSTEM' is 7
+The 25th Percentile for column 'MenBetterSTEM' is 1.0
+The 50th Percentile for column 'MenBetterSTEM' is 1.0
+The 75th Percentile for column 'MenBetterSTEM' is 3.0
+The Count for column 'MenBetterSTEM' is 166
+The Missing Values for column 'MenBetterSTEM' is 0
+
+Statistics for column 'School_support_engage6' in sheet 'responses':
+The Mean for column 'School_support_engage6' is 5.553212851405623
+The Median for column 'School_support_engage6' is 5.666666666666667
+The Mode for column 'School_support_engage6' is [5.666666666666667]
+The Standard Deviation for column 'School_support_engage6' is 0.7330667919249009
+The Variance for column 'School_support_engage6' is 0.537386921423066
+The Skewness for column 'School_support_engage6' is -0.37877008116584304
+The Kurtosis for column 'School_support_engage6' is -0.07615855549938466
+The Min for column 'School_support_engage6' is 3.3333333333333335
+The Max for column 'School_support_engage6' is 7.0
+The 25th Percentile for column 'School_support_engage6' is 5.0
+The 50th Percentile for column 'School_support_engage6' is 5.666666666666667
+The 75th Percentile for column 'School_support_engage6' is 6.0
+The Count for column 'School_support_engage6' is 166
+The Missing Values for column 'School_support_engage6' is 0
+
+Statistics for column 'pwi_wellbeing' in sheet 'responses':
+The Mean for column 'pwi_wellbeing' is 8.042168674698795
+The Median for column 'pwi_wellbeing' is 8.0
+The Mode for column 'pwi_wellbeing' is [9]
+The Standard Deviation for column 'pwi_wellbeing' is 1.7696170092014831
+The Variance for column 'pwi_wellbeing' is 3.1315443592552024
+The Skewness for column 'pwi_wellbeing' is -1.0675545166506708
+The Kurtosis for column 'pwi_wellbeing' is 0.7837775883187637
+The Min for column 'pwi_wellbeing' is 2
+The Max for column 'pwi_wellbeing' is 10
+The 25th Percentile for column 'pwi_wellbeing' is 7.0
+The 50th Percentile for column 'pwi_wellbeing' is 8.0
+The 75th Percentile for column 'pwi_wellbeing' is 9.0
+The Count for column 'pwi_wellbeing' is 166
+The Missing Values for column 'pwi_wellbeing' is 0
+
+Statistics for column 'Intelligence1' in sheet 'responses':
+The Mean for column 'Intelligence1' is 3.3855421686746987
+The Median for column 'Intelligence1' is 3.0
+The Mode for column 'Intelligence1' is [1]
+The Standard Deviation for column 'Intelligence1' is 1.8994820684897387
+The Variance for column 'Intelligence1' is 3.6080321285140564
+The Skewness for column 'Intelligence1' is 0.27024861528370586
+The Kurtosis for column 'Intelligence1' is -1.1531966657720703
+The Min for column 'Intelligence1' is 1
+The Max for column 'Intelligence1' is 7
+The 25th Percentile for column 'Intelligence1' is 2.0
+The 50th Percentile for column 'Intelligence1' is 3.0
+The 75th Percentile for column 'Intelligence1' is 5.0
+The Count for column 'Intelligence1' is 166
+The Missing Values for column 'Intelligence1' is 0
+
+Statistics for column 'Intelligence2' in sheet 'responses':
+The Mean for column 'Intelligence2' is 3.4156626506024095
+The Median for column 'Intelligence2' is 3.0
+The Mode for column 'Intelligence2' is [4]
+The Standard Deviation for column 'Intelligence2' is 1.7826083665617534
+The Variance for column 'Intelligence2' is 3.177692588535962
+The Skewness for column 'Intelligence2' is 0.28293273075733794
+The Kurtosis for column 'Intelligence2' is -0.8058131126160357
+The Min for column 'Intelligence2' is 1
+The Max for column 'Intelligence2' is 7
+The 25th Percentile for column 'Intelligence2' is 2.0
+The 50th Percentile for column 'Intelligence2' is 3.0
+The 75th Percentile for column 'Intelligence2' is 5.0
+The Count for column 'Intelligence2' is 166
+The Missing Values for column 'Intelligence2' is 0
+
+Statistics for column 'Soft' in sheet 'responses':
+The Mean for column 'Soft' is 2.4759036144578315
+The Median for column 'Soft' is 2.0
+The Mode for column 'Soft' is [1]
+The Standard Deviation for column 'Soft' is 1.7045458196421661
+The Variance for column 'Soft' is 2.905476451259584
+The Skewness for column 'Soft' is 1.0710225695804432
+The Kurtosis for column 'Soft' is 0.2585506183540738
+The Min for column 'Soft' is 1
+The Max for column 'Soft' is 7
+The 25th Percentile for column 'Soft' is 1.0
+The 50th Percentile for column 'Soft' is 2.0
+The 75th Percentile for column 'Soft' is 4.0
+The Count for column 'Soft' is 166
+The Missing Values for column 'Soft' is 0
+
+Statistics for column 'opinion' in sheet 'responses':
+The Mean for column 'opinion' is 3.1566265060240966
+The Median for column 'opinion' is 3.0
+The Mode for column 'opinion' is [4]
+The Standard Deviation for column 'opinion' is 1.5134302014986765
+The Variance for column 'opinion' is 2.2904709748083247
+The Skewness for column 'opinion' is 0.39955981995068673
+The Kurtosis for column 'opinion' is -0.4043530744077297
+The Min for column 'opinion' is 1
+The Max for column 'opinion' is 7
+The 25th Percentile for column 'opinion' is 2.0
+The 50th Percentile for column 'opinion' is 3.0
+The 75th Percentile for column 'opinion' is 4.0
+The Count for column 'opinion' is 166
+The Missing Values for column 'opinion' is 0
+
+Statistics for column 'Nerds' in sheet 'responses':
+The Mean for column 'Nerds' is 2.2349397590361444
+The Median for column 'Nerds' is 2.0
+The Mode for column 'Nerds' is [1]
+The Standard Deviation for column 'Nerds' is 1.5488751527393274
+The Variance for column 'Nerds' is 2.3990142387732747
+The Skewness for column 'Nerds' is 1.4228677121370337
+The Kurtosis for column 'Nerds' is 1.574392577334812
+The Min for column 'Nerds' is 1
+The Max for column 'Nerds' is 7
+The 25th Percentile for column 'Nerds' is 1.0
+The 50th Percentile for column 'Nerds' is 2.0
+The 75th Percentile for column 'Nerds' is 3.0
+The Count for column 'Nerds' is 166
+The Missing Values for column 'Nerds' is 0
+
+Statistics for column 'School_support_engage' in sheet 'responses':
+The Mean for column 'School_support_engage' is 5.724397590361446
+The Median for column 'School_support_engage' is 5.875
+The Mode for column 'School_support_engage' is [6.0]
+The Standard Deviation for column 'School_support_engage' is 0.7913497857383281
+The Variance for column 'School_support_engage' is 0.626234483388098
+The Skewness for column 'School_support_engage' is -0.7347707926833926
+The Kurtosis for column 'School_support_engage' is 0.271570934500998
+The Min for column 'School_support_engage' is 3.25
+The Max for column 'School_support_engage' is 7.0
+The 25th Percentile for column 'School_support_engage' is 5.25
+The 50th Percentile for column 'School_support_engage' is 5.875
+The 75th Percentile for column 'School_support_engage' is 6.25
+The Count for column 'School_support_engage' is 166
+The Missing Values for column 'School_support_engage' is 0
+
+Statistics for column 'comfortable' in sheet 'responses':
+The Mean for column 'comfortable' is 6.072289156626506
+The Median for column 'comfortable' is 6.0
+The Mode for column 'comfortable' is [7]
+The Standard Deviation for column 'comfortable' is 1.0592522523287486
+The Variance for column 'comfortable' is 1.1220153340635268
+The Skewness for column 'comfortable' is -1.6321510965349426
+The Kurtosis for column 'comfortable' is 3.812380818477618
+The Min for column 'comfortable' is 1
+The Max for column 'comfortable' is 7
+The 25th Percentile for column 'comfortable' is 6.0
+The 50th Percentile for column 'comfortable' is 6.0
+The 75th Percentile for column 'comfortable' is 7.0
+The Count for column 'comfortable' is 166
+The Missing Values for column 'comfortable' is 0
+
+Statistics for column 'future' in sheet 'responses':
+The Mean for column 'future' is 6.192771084337349
+The Median for column 'future' is 7.0
+The Mode for column 'future' is [7]
+The Standard Deviation for column 'future' is 1.072610311629234
+The Variance for column 'future' is 1.1504928806133625
+The Skewness for column 'future' is -1.5558174825863338
+The Kurtosis for column 'future' is 2.522884768514022
+The Min for column 'future' is 2
+The Max for column 'future' is 7
+The 25th Percentile for column 'future' is 6.0
+The 50th Percentile for column 'future' is 7.0
+The 75th Percentile for column 'future' is 7.0
+The Count for column 'future' is 166
+The Missing Values for column 'future' is 0
+
+Statistics for column 'bullying' in sheet 'responses':
+The Mean for column 'bullying' is 6.132530120481928
+The Median for column 'bullying' is 7.0
+The Mode for column 'bullying' is [7]
+The Standard Deviation for column 'bullying' is 1.3993165807016839
+The Variance for column 'bullying' is 1.9580868930266524
+The Skewness for column 'bullying' is -2.0795723188148196
+The Kurtosis for column 'bullying' is 4.151306008985481
+The Min for column 'bullying' is 1
+The Max for column 'bullying' is 7
+The 25th Percentile for column 'bullying' is 6.0
+The 50th Percentile for column 'bullying' is 7.0
+The 75th Percentile for column 'bullying' is 7.0
+The Count for column 'bullying' is 166
+The Missing Values for column 'bullying' is 0
+
+Statistics for column 'candidate_Perc_Effort' in sheet 'responses':
+The Mean for column 'candidate_Perc_Effort' is 51.10843373493976
+The Median for column 'candidate_Perc_Effort' is 53.0
+The Mode for column 'candidate_Perc_Effort' is [53]
+The Standard Deviation for column 'candidate_Perc_Effort' is 21.573278672549083
+The Variance for column 'candidate_Perc_Effort' is 465.4063526834612
+The Skewness for column 'candidate_Perc_Effort' is -0.2760418599064996
+The Kurtosis for column 'candidate_Perc_Effort' is 0.06091673614262527
+The Min for column 'candidate_Perc_Effort' is 1
+The Max for column 'candidate_Perc_Effort' is 97
+The 25th Percentile for column 'candidate_Perc_Effort' is 41.25
+The 50th Percentile for column 'candidate_Perc_Effort' is 53.0
+The 75th Percentile for column 'candidate_Perc_Effort' is 56.0
+The Count for column 'candidate_Perc_Effort' is 166
+The Missing Values for column 'candidate_Perc_Effort' is 0
+

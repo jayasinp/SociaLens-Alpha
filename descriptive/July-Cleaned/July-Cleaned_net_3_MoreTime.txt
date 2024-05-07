@@ -1,0 +1,32 @@
+Statistics for column 'Source' in sheet 'net_3_MoreTime':
+The Mean for column 'Source' is 37936.066666666666
+The Median for column 'Source' is 37941.0
+The Mode for column 'Source' is [37968]
+The Standard Deviation for column 'Source' is 50.98118418854673
+The Variance for column 'Source' is 2599.0811412665266
+The Skewness for column 'Source' is -0.026602677047129732
+The Kurtosis for column 'Source' is -1.3293937196278192
+The Min for column 'Source' is 37849
+The Max for column 'Source' is 38022
+The 25th Percentile for column 'Source' is 37885.0
+The 50th Percentile for column 'Source' is 37941.0
+The 75th Percentile for column 'Source' is 37978.0
+The Count for column 'Source' is 480
+The Missing Values for column 'Source' is 0
+
+Statistics for column 'Target' in sheet 'net_3_MoreTime':
+The Mean for column 'Target' is 37933.80416666667
+The Median for column 'Target' is 37930.0
+The Mode for column 'Target' is [37879, 37975]
+The Standard Deviation for column 'Target' is 51.019206986769234
+The Variance for column 'Target' is 2602.959481558803
+The Skewness for column 'Target' is 0.10103890844241273
+The Kurtosis for column 'Target' is -1.2669995859915646
+The Min for column 'Target' is 37849
+The Max for column 'Target' is 38022
+The 25th Percentile for column 'Target' is 37886.75
+The 50th Percentile for column 'Target' is 37930.0
+The 75th Percentile for column 'Target' is 37977.0
+The Count for column 'Target' is 480
+The Missing Values for column 'Target' is 0
+

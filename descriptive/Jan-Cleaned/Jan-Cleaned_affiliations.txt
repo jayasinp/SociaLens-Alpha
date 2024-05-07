@@ -1,0 +1,16 @@
+Statistics for column 'ID' in sheet 'affiliations':
+The Mean for column 'ID' is 9395.5
+The Median for column 'ID' is 9395.5
+The Mode for column 'ID' is [9376, 9377, 9378, 9379, 9380, 9381, 9382, 9383, 9384, 9385, 9386, 9387, 9388, 9389, 9390, 9391, 9392, 9393, 9394, 9395, 9396, 9397, 9398, 9399, 9400, 9401, 9402, 9403, 9404, 9405, 9406, 9407, 9408, 9409, 9410, 9411, 9412, 9413, 9414, 9415]
+The Standard Deviation for column 'ID' is 11.69045194450012
+The Variance for column 'ID' is 136.66666666666666
+The Skewness for column 'ID' is 0.0
+The Kurtosis for column 'ID' is -1.2000000000000002
+The Min for column 'ID' is 9376
+The Max for column 'ID' is 9415
+The 25th Percentile for column 'ID' is 9385.75
+The 50th Percentile for column 'ID' is 9395.5
+The 75th Percentile for column 'ID' is 9405.25
+The Count for column 'ID' is 40
+The Missing Values for column 'ID' is 0
+

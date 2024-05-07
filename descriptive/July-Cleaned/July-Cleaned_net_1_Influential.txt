@@ -1,0 +1,32 @@
+Statistics for column 'Source' in sheet 'net_1_Influential':
+The Mean for column 'Source' is 37933.6525974026
+The Median for column 'Source' is 37931.0
+The Mode for column 'Source' is [37867]
+The Standard Deviation for column 'Source' is 50.47338860628346
+The Variance for column 'Source' is 2547.5629574009045
+The Skewness for column 'Source' is 0.018719717598622145
+The Kurtosis for column 'Source' is -1.281503542936584
+The Min for column 'Source' is 37849
+The Max for column 'Source' is 38022
+The 25th Percentile for column 'Source' is 37886.0
+The 50th Percentile for column 'Source' is 37931.0
+The 75th Percentile for column 'Source' is 37980.0
+The Count for column 'Source' is 308
+The Missing Values for column 'Source' is 0
+
+Statistics for column 'Target' in sheet 'net_1_Influential':
+The Mean for column 'Target' is 37919.53571428572
+The Median for column 'Target' is 37906.0
+The Mode for column 'Target' is [37854]
+The Standard Deviation for column 'Target' is 53.26476816951923
+The Variance for column 'Target' is 2837.135528152629
+The Skewness for column 'Target' is 0.3238169662573545
+The Kurtosis for column 'Target' is -1.1534316096899835
+The Min for column 'Target' is 37849
+The Max for column 'Target' is 38019
+The 25th Percentile for column 'Target' is 37865.75
+The 50th Percentile for column 'Target' is 37906.0
+The 75th Percentile for column 'Target' is 37964.0
+The Count for column 'Target' is 308
+The Missing Values for column 'Target' is 0
+

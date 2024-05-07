@@ -1,0 +1,32 @@
+Statistics for column 'Source' in sheet 'net_4_Advice':
+The Mean for column 'Source' is 32473.373297002723
+The Median for column 'Source' is 32469.0
+The Mode for column 'Source' is [32447]
+The Standard Deviation for column 'Source' is 50.17166864059875
+The Variance for column 'Source' is 2517.1963341820406
+The Skewness for column 'Source' is 0.17856025143631069
+The Kurtosis for column 'Source' is -1.2615955969855637
+The Min for column 'Source' is 32392
+The Max for column 'Source' is 32565
+The 25th Percentile for column 'Source' is 32431.0
+The 50th Percentile for column 'Source' is 32469.0
+The 75th Percentile for column 'Source' is 32519.0
+The Count for column 'Source' is 367
+The Missing Values for column 'Source' is 0
+
+Statistics for column 'Target' in sheet 'net_4_Advice':
+The Mean for column 'Target' is 32475.713896457764
+The Median for column 'Target' is 32470.0
+The Mode for column 'Target' is [32420, 32448]
+The Standard Deviation for column 'Target' is 49.62044349779848
+The Variance for column 'Target' is 2462.1884129182117
+The Skewness for column 'Target' is 0.11640479587869246
+The Kurtosis for column 'Target' is -1.1201024443680365
+The Min for column 'Target' is 32391
+The Max for column 'Target' is 32565
+The 25th Percentile for column 'Target' is 32433.5
+The 50th Percentile for column 'Target' is 32470.0
+The 75th Percentile for column 'Target' is 32517.0
+The Count for column 'Target' is 367
+The Missing Values for column 'Target' is 0
+

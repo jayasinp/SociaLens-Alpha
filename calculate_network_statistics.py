@@ -63,6 +63,4 @@ def calculate_network_statistics(file_path):
 
     return network_stats
 
-# Example usage
-# file_path = 'path_to_your_excel_file.xlsx'
-# stats = calculate_network_statistics(file_path)
+

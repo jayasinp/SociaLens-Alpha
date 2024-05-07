@@ -1,0 +1,32 @@
+Statistics for column 'Source' in sheet 'net_affiliation_0_SchoolActivit':
+The Mean for column 'Source' is 37937.81686746988
+The Median for column 'Source' is 37939.0
+The Mode for column 'Source' is [37983]
+The Standard Deviation for column 'Source' is 50.60775756175384
+The Variance for column 'Source' is 2561.1451254292533
+The Skewness for column 'Source' is -0.03523060064577167
+The Kurtosis for column 'Source' is -1.232977057424911
+The Min for column 'Source' is 37849
+The Max for column 'Source' is 38022
+The 25th Percentile for column 'Source' is 37891.0
+The 50th Percentile for column 'Source' is 37939.0
+The 75th Percentile for column 'Source' is 37981.5
+The Count for column 'Source' is 415
+The Missing Values for column 'Source' is 0
+
+Statistics for column 'Target' in sheet 'net_affiliation_0_SchoolActivit':
+The Mean for column 'Target' is 9603.546987951808
+The Median for column 'Target' is 9606.0
+The Mode for column 'Target' is [9589]
+The Standard Deviation for column 'Target' is 11.666131844360386
+The Variance for column 'Target' is 136.09863220999947
+The Skewness for column 'Target' is -0.23676337093650007
+The Kurtosis for column 'Target' is -1.2890201209308436
+The Min for column 'Target' is 9584
+The Max for column 'Target' is 9623
+The 25th Percentile for column 'Target' is 9590.0
+The 50th Percentile for column 'Target' is 9606.0
+The 75th Percentile for column 'Target' is 9611.0
+The Count for column 'Target' is 415
+The Missing Values for column 'Target' is 0
+

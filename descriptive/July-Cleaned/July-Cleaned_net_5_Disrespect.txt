@@ -1,0 +1,32 @@
+Statistics for column 'Source' in sheet 'net_5_Disrespect':
+The Mean for column 'Source' is 37938.520202020205
+The Median for column 'Source' is 37927.0
+The Mode for column 'Source' is [37907, 37917]
+The Standard Deviation for column 'Source' is 50.71115673318707
+The Variance for column 'Source' is 2571.621417217864
+The Skewness for column 'Source' is 0.15915072412068182
+The Kurtosis for column 'Source' is -1.1600005004677267
+The Min for column 'Source' is 37849
+The Max for column 'Source' is 38022
+The 25th Percentile for column 'Source' is 37903.25
+The 50th Percentile for column 'Source' is 37927.0
+The 75th Percentile for column 'Source' is 37985.5
+The Count for column 'Source' is 198
+The Missing Values for column 'Source' is 0
+
+Statistics for column 'Target' in sheet 'net_5_Disrespect':
+The Mean for column 'Target' is 37929.38383838384
+The Median for column 'Target' is 37922.0
+The Mode for column 'Target' is [37864, 37957]
+The Standard Deviation for column 'Target' is 48.48029733677458
+The Variance for column 'Target' is 2350.339229862073
+The Skewness for column 'Target' is 0.1569667245119351
+The Kurtosis for column 'Target' is -0.9185370471847216
+The Min for column 'Target' is 37849
+The Max for column 'Target' is 38021
+The 25th Percentile for column 'Target' is 37889.0
+The 50th Percentile for column 'Target' is 37922.0
+The 75th Percentile for column 'Target' is 37960.0
+The Count for column 'Target' is 198
+The Missing Values for column 'Target' is 0
+

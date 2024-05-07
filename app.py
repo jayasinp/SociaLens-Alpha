@@ -359,8 +359,26 @@ def ergm():
             flash(f"Selected file {file_path} does not exist.", 'danger')
             return redirect(url_for('ergm'))
 
+        # Clean the file by removing self-loops and parallel edges
         try:
-            ergm_results = process_file(file_path)
+            edgelist = pd.read_excel(file_path)
+            # Remove self-loops
+            cleaned_edgelist = edgelist[edgelist['Source'] != edgelist['Target']]
+            # Remove parallel edges (duplicates)
+            cleaned_edgelist = cleaned_edgelist.drop_duplicates(subset=['Source', 'Target'], keep='first')
+            # Create a directory for cleaned files if it doesn't already exist
+            cleaned_dir = os.path.join(app.config['RAW_DATA_FOLDER'], 'cleaned_network_objects')
+            os.makedirs(cleaned_dir, exist_ok=True)
+            # Save the cleaned data to the new directory
+            cleaned_file_path = os.path.join(cleaned_dir, 'cleaned_' + selected_file)
+            cleaned_edgelist.to_excel(cleaned_file_path, index=False)
+        except Exception as e:
+            flash(f"Failed to clean the file: {str(e)}", 'danger')
+            return redirect(url_for('ergm'))
+
+        try:
+            # Assuming process_file can handle the new cleaned file path
+            ergm_results = process_file(cleaned_file_path)
             return render_template('ergm_results.html', ergm_results=ergm_results, filename=selected_file)
         except Exception as e:
             flash(f"Failed to calculate ERGM: {str(e)}", 'danger')
