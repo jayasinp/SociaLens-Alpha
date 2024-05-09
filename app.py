@@ -54,8 +54,8 @@ app.config['PROMPT_FILES_FOLDER'] = 'descriptive'  # Path for the output text fi
 os.makedirs(app.config['PROMPT_FILES_FOLDER'], exist_ok=True)
 
 # Set the path for the network_prompt_files folder where network statistics are saved for gpt3.5
-NETWORK_PROMPT_FILES_FOLDER = 'network_prompt_files'
-app.config['NETWORK_PROMPT_FILES_FOLDER'] = 'network_prompt_files'  # Path for the output text files
+NETWORK_PROMPT_FILES_FOLDER = 'network'
+app.config['NETWORK_PROMPT_FILES_FOLDER'] = 'network'  # Path for the output text files
 os.makedirs(app.config['NETWORK_PROMPT_FILES_FOLDER'], exist_ok=True)
 
 # Set the path for the network data folder
