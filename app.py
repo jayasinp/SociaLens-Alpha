@@ -1,3 +1,4 @@
+import csv
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
 from flask import session
 from flask import send_file
@@ -10,8 +11,8 @@ from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file
 from calculate_network_statistics import calculate_network_statistics
-from ergm import process_file
-from chatbot import talktogpt
+#from ergm import process_file
+#from chatbot import talktogpt
 import reportlab
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
@@ -548,23 +549,32 @@ def get_statistics():
 def network_visualiser():
     if request.method=='POST':
         selected_filename = request.form.get('selectedFile')
+        nodes_filename = request.form.get('nodesFile')
+        selected_filename_xlsx = os.path.splitext(selected_filename)[0]+'.xlsx'  #Declan: This is to load the network statistics data
+        selected_folder = os.path.dirname(nodes_filename) + '/' #Declan: Split the filename to get the folder name after the '/'
+        file_path_xlsx = os.path.join(app.config['RAW_DATA_FOLDER'], selected_folder + selected_filename_xlsx) 
+        network_stats = calculate_network_statistics(file_path_xlsx)
     breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
     file_path = os.path.join(app.config['NETWORK_FOLDER'], selected_filename) 
     if not os.path.exists(file_path):
         flash("File does not exist.", 'danger')
         return redirect(url_for('network-creator-files'))
-    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, selected_filename=selected_filename, file_path=file_path)
+    # loading node data
+    if selected_folder:
+        directory = os.path.join(app.config['RAW_DATA_FOLDER'], nodes_filename)
+        csv_data = pd.read_csv(directory).to_csv(index=False)
+    return render_template('network_visualiser.html', breadcrumbs=breadcrumbs, selected_filename=selected_filename, selected_filename_xlsx=selected_filename_xlsx, csv_data=csv_data, selected_folder=selected_folder, nodes_filename=nodes_filename, file_path=file_path, network_stats=network_stats)
 
 # Route for network creator/selector
 @app.route('/network-creator-files', methods=['GET'])
 def network_creator_files():
     breadcrumbs = [("Home", "/"), ("Network Visualiser", "/network-visualiser")]
-    allowed_extensions = ['.xlsx', '.xls', '.csv']
+    allowed_extensions = ['.csv'] #Declan: removed '.xlsx', '.xls'
     update_files = []
     for root, dirs, files in os.walk(app.config['RAW_DATA_FOLDER']):
         for file in files:
             if os.path.splitext(file)[1] in allowed_extensions:
-                update_files.append(os.path.relpath(os.path.join(root, file), app.config['RAW_DATA_FOLDER']))    
+                update_files.append(os.path.relpath(os.path.join(root, file), app.config['RAW_DATA_FOLDER']))   
     # Debugging: Print update_files to see if it's populated correctly
     print("Update Files:", update_files)
     
@@ -578,7 +588,19 @@ def network_creator_files():
     files = [f for f in os.listdir(app.config['NETWORK_FOLDER']) if f.endswith('.json')] 
     return render_template('network_creator.html', breadcrumbs=breadcrumbs, files=files, update_files=update_files)
 
-
+# Route for getting Node data
+@app.route('/get_network_node_data/<filepath>', methods=['GET'])
+def get_network_node_data(filepath):
+    network_node_file_path = os.path.join(app.config['RAW_DATA_FOLDER'], filepath)
+    
+    if not os.path.exists(network_node_file_path):
+        return jsonify({'error': 'File not found'}), 404
+    
+    #with open(network_node_file_path, 'r') as file:
+        #data = list(csv.DictReader(file))
+        
+    #return jsonify(data)
+    return print("Testing")
 # Route for getting Network data
 @app.route('/get_network_json_data/<filename>', methods=['GET'])
 def get_network_json_data(filename):

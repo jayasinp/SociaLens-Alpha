@@ -175,6 +175,9 @@ if (fileName && sheetName) {
                                     var maxY = Math.max(...flattenedData);
                                     var yLimit = maxY > 0.1 ? 0.15 : 0.5;
                                     console.log("MaxY:", maxY, "YLimit:", yLimit);
+                                    
+                                    
+                                    
                                     // Define scales
                                     var margin = {top: 30, right: 30, bottom: 50, left: 50},
                                         width = 500 - margin.left - margin.right,
@@ -184,9 +187,14 @@ if (fileName && sheetName) {
                                     var xScale = d3.scaleLinear()
                                                    .domain([-10, 10])
                                                    .range([0, width]);
-
+                                    // Define kernel density estimator for normal distribution
+                                    var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
+                                    var density = kde(flattenedData);
+                                    console.log("Density:", density);
+                                    var maxDensity = d3.max(density.map(d => d[1]));
+                                    console.log("Max Density:", maxDensity);
                                     var yScale = d3.scaleLinear()
-                                                   .domain([0, 0.30])
+                                                   .domain([0, maxDensity])
                                                    .range([height, 0]);
 
                                     // Set up SVG for the current column
@@ -207,11 +215,33 @@ if (fileName && sheetName) {
                                         .attr("text-anchor", "middle")
                                         .attr("font-size", "20px")
                                         .text(sheetName + ' - ' + metric);
+                                        
 
-                                    // Define kernel density estimator for normal distribution
-                                    var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
-                                    var density = kde(flattenedData);
+                                    
+                                    
+                                    // To draw the mean line: Calculate the sum product of all densities and x values and the sum of all densities
+                                    let sum_total = 0;
+                                    for (let i = 0; i < density.length; i++) {
+                                        sum_total += (density[i][1]*density[i][0]);
+                                    }
+                                    let sum = 0 ;
+                                    for (let i = 0; i < density.length; i++) {
+                                        sum += (density[i][1]);
+                                    }
 
+                                    // Calculate the mean density
+                                    let meanDensity = sum_total / sum;
+                                    
+                                    // Draw mean line
+                                    svg.append("line")
+                                       .attr("x1", xScale(meanDensity))
+                                       .attr("x2", xScale(meanDensity))
+                                       .attr("y1", yScale(0))
+                                       .attr("y2", yScale(maxDensity))
+                                       .attr("stroke", "red")
+                                       .attr("stroke-width", 2);
+
+                                    console.log("Mean Density:", meanDensity);
                                     // Draw KDE line
                                     var line = d3.line()
                                                  .x(d => xScale(d[0]))
