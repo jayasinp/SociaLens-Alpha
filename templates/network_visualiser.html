@@ -13,30 +13,30 @@
     stroke-width: 3; /* Increase stroke width for links */
 }
 </style>
-<div class="main-content-container">
-
-    <div class="container">
-<div>
-    <h3>Network Visualiser</h3>
-    <h4 id="sheetName"></h4>
-        <!-- Dropdown menu for selecting node groups -->
-    <select id="select">
-        <option value="">Select a group...</option>
-        <!-- Options will be dynamically added here -->
-    </select>
-    <!-- Reload button to reset the entire graph -->
-    <button id="reloadButton">Reset Graph</button>
-</div>
-<!-- Add dropdown menu for file selection -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
-
-<!-- SVG container for the network visualization -->
-<svg id="network" style="background-color: rgb(195, 200, 221);">
-</svg>
-
+<div class="main-content-container">
+    <div class="container">
+    <!-- SVG container for the network visualization -->
+    <svg id="network" style="background-color: rgb(255, 255, 255); border: 5px solid #ccc">
+    </svg>
+    <div>
+        <!-- <h3>Network Visualiser</h3> -->
+        <h4 id="sheetName"></h4>
+            <!-- Dropdown menu for selecting node groups -->
+        <select id="selectDataField">
+            <option value="">Select a data field...</option>
+            <!-- Options will be dynamically added here -->
+        </select>        
+        <select id="selectGroup">
+            <option value="">Select a group...</option>
+            <!-- Options will be dynamically added here -->
+        </select>
+        <!-- Reload button to reset the entire graph -->
+        <button id="reloadButton">Reset Graph</button>
+    </div>
+</div>
 <script>
  
-
 //name a tooltip_in function to call when the mouse hovers a node
 tooltip_in = function(event, d) { // pass event and d to this function so that it can access d for our data
     return tooltip
@@ -70,7 +70,26 @@ const height = window.innerHeight*0.7;
 // Fetch the selected filename
 const selectedFilename = "{{ selected_filename }}";
 // appenn the selected filename to the title
-document.getElementById("sheetName").innerHTML = "<p>Network for " + selectedFilename + "</p>";
+//document.getElementById("sheetName").innerHTML = "<p>Network for " + selectedFilename + "</p>";
+
+// Fetch the selected filename
+const selectedFilenameXlsx = "{{ selected_filename_xlsx }}";
+// appenn the selected filename to the title
+//document.getElementById("sheetName").innerHTML += "<p>XLSX filename: " + selectedFilenameXlsx + "</p>";
+
+// Fetch the selected node filename
+const selectedNodeFilename = "{{ nodes_filename }}";
+// append the selected filename to the title
+////document.getElementById("sheetName").innerHTML += "<p>Nodes " + selectedNodeFilename + "</p>";
+
+// Fetch the selected node filename
+const selectedFolder = "{{ selected_folder }}";
+// append the selected filename to the title
+//document.getElementById("sheetName").innerHTML += "<p>Selected Folder " + selectedFolder + "</p>";
+
+// Check if loading was successful
+console.log(selectedFilename)
+console.log(selectedNodeFilename)
 
 d3.json(`/get_network_json_data/${selectedFilename}`).then(function(data) {    
     let node_data = data.nodes
@@ -105,6 +124,7 @@ d3.json(`/get_network_json_data/${selectedFilename}`).then(function(data) {
         .attr('class', 'link')
         .style('stroke', '#999')
         .style('stroke-opacity', 0.8)
+        .style('stroke-width', 0.5)
         //.attr("marker-end", "url(#arrow)"); //#Declan: adds arrows to the end of links
     
     let color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -173,55 +193,11 @@ d3.json(`/get_network_json_data/${selectedFilename}`).then(function(data) {
 
     
     });
-    // Create a selection for the dropdown menu
-let select = d3.select("#select");
 
-// Fetch unique groups from the node data
-let groups = [...new Set(node_data.map(d => d.group))];
-
-// Add an option for each group to the dropdown menu
-select.selectAll("option")
-    .data(groups)
-    .enter()
-    .append("option")
-    .attr("value", d => d) // Set the value of each option to the group value
-    .text(d => "Group " + d); // Set the text of each option to indicate the group
-
-// Add change event listener to the dropdown menu
-select.on("change", function() {
-    // Get the selected group value
-    let selectedGroup = this.value;
-
-    // Reset the graph if "No Selection" is chosen
-    if (selectedGroup === "") {
-    // Clear any existing filtering and reset the visualization to its original state
-    resetGraph();
-    return; // Exit the function early
-}
-
-    // Filter the nodes based on the selected group
-    let filteredNodes = node_data.filter(d => d.group == selectedGroup);
-
-    // Perform actions with the filtered nodes (e.g., update node colors)
-    // Example: Change fill color based on the group
-    node.style("fill", d => d.group == selectedGroup ? "blue" : "gray");
-    // change stroke colour of links based on group
-    link.style("stroke", d => d.source.group == selectedGroup ? "blue" : "gray");
-});
-// Function to reset the graph to its original state
-// Select the reload button
-let reloadButton = document.getElementById("reloadButton");
-
-// Add click event listener to the reload button
-reloadButton.addEventListener("click", function() {
-    // Reset the entire graph
-    resetGraph();
-});
 
 // Function to reset the graph to its original state
 function resetGraph() {
-    // Clear any existing filtering and reset the visualization to its original state
-    // For example, you can reload the page to reset the entire graph
+    // Reload the page to reset the entire graph
     location.reload();
 }
     // Attach click event listener to the nodes
@@ -233,24 +209,152 @@ function resetGraph() {
     console.log("Clicked on node: " + d.id);
     // Remove highlight from previously highlighted nodes and links
     node.classed("highlighted-node", false);
-    link.style("stroke", "#999").classed("highlighted-link", false);
+    link.style("stroke", "#999").style("stroke-width", 0.5).classed("highlighted-link", false);
 
     // Highlight the clicked node
     d3.select(this).classed("highlighted-node", true);
 
     // Find the links associated with the clicked node
     var clickedNodeLinks = link.filter(function(link) {
-        return link.source === d || link.target === d; //#Declan: remove commented bit, this created a bug
+        return link.source === d || link.target === d; 
     });
 
     // Highlight the links associated with the clicked node
-    clickedNodeLinks.style("stroke", "#000").classed("highlighted-link", true);
+    clickedNodeLinks.style("stroke", "#000")
+        .style("stroke-width", 3)
+        .classed("highlighted-link", true);
 
     // Show tooltip for the clicked node
     tooltip_in(event, d);
 }
+
+nodeData = '{{ csv_data|tojson }}'
+console.log(nodeData)
+// Split the string into lines
+let lines = nodeData.split('\n');
+
+// Extract column names from the first line
+let columnNames = lines[0].split(',');
+
+// Iterate over each line (starting from index 1 to skip the header)
+for (let i = 1; i < lines.length; i++) {
+    // Split the line into an array of values
+    let values = lines[i].split(',');
+
+    // Find the ID column index by comparing with the node IDs
+    let idColumnIndex = values.findIndex(value => node_data.map(node => node.id).includes(value));
+    // Extract the ID from the corresponding column
+    let id = values[idColumnIndex];
+    // Find the corresponding node by ID (assuming you have a nodes array)
+    let matchingNode = node_data.find(node => node.id === id);
+
+    // If a matching node is found, attach the other columns to its existing data
+    if (matchingNode) {
+        // Initialize an object to store the additional data for this node
+        let additionalData = {};
+
+        // Iterate over the values array, starting from index 1 to skip the ID column
+        for (let j = 1; j < values.length; j++) {
+            // Assign column name and value to additionalData
+            additionalData[columnNames[j]] = values[j];
+        }
+
+        // Merge additionalData with the existing node data
+        matchingNode.data = { ...matchingNode.data, ...additionalData };
+        
+        // Update the node_data array with the updated matching node
+        let nodeIndex = node_data.findIndex(node => node.id === id);
+        node_data[nodeIndex] = matchingNode;
+    } 
+}
+//Testing
+console.log(node_data);
+
+// Create a selection for the dropdown menu
+let selectField = d3.select("#selectDataField");
+
+// Fetch unique keys from the 'data' section of nodes
+let keys = new Set();
+// Loop through each node in node_data
+node_data.forEach(node => {
+    // Check if node.data exists
+    if (node.data) {
+        // Loop through each key in node.data and add it to the set
+        Object.keys(node.data).forEach(key => {
+            keys.add(key);
+        });
+    }
 });
 
+// Convert Set to an array
+let keyArray = Array.from(keys);
+console.log(keyArray);
+// Add an option for each key to the dropdown menu
+selectField.selectAll("option")
+    .data(keyArray)
+    .enter()
+    .append("option")
+    .attr("value", d => d) // Set the value of each option to the key value
+    .text(d => d); // Set the text of each option to the key value
+
+// Add change event listener to the dropdown menu
+selectField.on("change", function() {
+    // Get the selected key value
+    let selectedKey = this.value;
+
+    // Get the selected group value
+    let selectedGroup = d3.select("#selectGroup").node().value;
+
+    // Iterate over the node_data array and update each node object with the selected data field
+    node_data.forEach(node => { 
+        // Access the selected data field dynamically using the selectedKey
+        const selectedFieldValue = node[selectedKey];
+
+        // Add the selected data field value to the node object
+        node.selectedField = selectedFieldValue;
+    });
+    // Fetch unique groups from the node data based on the selected data field
+    let groups = [...new Set(node_data.map(d => d.data[selectedKey]))];
+
+    // Update the options in the group selection dropdown based on the new groups
+    let selectGroup = d3.select("#selectGroup");
+    selectGroup.selectAll("option").remove(); // Remove existing options
+    selectGroup.selectAll("option")
+        .data(groups)
+        .enter()
+        .append("option")
+        .attr("value", d => d) // Set the value of each option to the group value
+        .text(d => d); // Set the text of each option to indicate the group
+    
+        // Add change event listener to the group select dropdown
+    selectGroup.on("change", function() {
+        // Get the selected group value
+        let selectedGroup = this.value;
+
+        // Filter the nodes based on the selected group and key
+        let filteredNodes = node_data.filter(d => d.data[selectedKey] == selectedGroup && d.data[selectedKey]);
+        
+        // Perform actions with the filtered nodes (e.g., update node colors)
+        // Example: Change fill color based on the selected key
+        node.style("fill", d => filteredNodes.includes(d) ? "blue" : "gray");
+        // Change stroke color of links based on the selected key
+        link.style("stroke", d => filteredNodes.some(node => node === d.source || node === d.target) ? "blue" : "gray");
+    });
+});
+
+
+// Select the reload button
+let reloadButton = document.getElementById("reloadButton");
+
+// Add click event listener to the reload button
+reloadButton.addEventListener("click", function() {
+    //remove filters
+    link.style("stroke", "#999").style("stroke-width", 0.5);
+    node.style("fill", function (d) { return color(d.group); }).style("stroke", "none");
+    // Reset the entire graph
+    //resetGraph();
+});
+});
 
 // Zoomed function to update SVG transform
 function zoomed(event) {
@@ -258,8 +362,108 @@ svg.attr("transform", event.transform);
 tooltip_out();
 }
 </script>
+
+<!-- Network Statistics Section-->
+
+<script>
+    function sortTable(column) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("network-stats-table");
+        switching = true;
+        dir = "asc"; // Set the sorting direction to ascending by default
+
+        // Loop until no switching has been done
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            // Loop through all table rows (except the first, which contains the table headers)
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = parseFloat(rows[i].getElementsByTagName("td")[column].innerHTML);
+                y = parseFloat(rows[i + 1].getElementsByTagName("td")[column].innerHTML);
+
+                // Check if the two rows should switch places, based on the direction
+                if (dir == "asc") {
+                    if (x > y) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x < y) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                // If a switch has been marked, make the switch and mark that a switch has been done
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                // If no switching has been done and the direction is ascending, set the direction to descending and run the loop again
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+
+<div class="container mt-5">
+    <h3>Network Statistics Results for {{ selected_filename_xlsx }}</h3>
+    <div class="alert alert-info" role="alert">
+        🤞Click on a table header to sort the table by that column.
+        Click once for ascending order, click again for descending order.
     </div>
+
+    {% for sheet in network_stats %}
+    <div class="card">
+        <div class="card-body mh-25" style="max-height: 240px; overflow-y: auto;">
+            <table class="table table-striped" id="network-stats-table">
+                <thead>
+                    <tr>
+                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="The node identifier" onclick="sortTable(0)">Node</th>
+                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="The number of edges connected to the node" onclick="sortTable(1)">Degree</th>
+                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="The fraction of nodes connected to the current node" onclick="sortTable(2)">Degree Centrality</th>
+                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="The fraction of shortest paths that pass through the node" onclick="sortTable(3)">Betweenness Centrality</th>
+                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="The reciprocal of the sum of the shortest path lengths from the node to all other nodes" onclick="sortTable(4)">Closeness Centrality</th>
+                        <th data-bs-toggle="tooltip" data-bs-placement="top" title="The importance of a node in the network" onclick="sortTable(5)">Eigenvector Centrality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set counter = 0 %}
+                    {% for node, values in sheet.node_degrees.items() %}
+                    <tr>
+                        <td>{{ node }}</td>
+                        <td>{{ values }}</td>
+                        <td>{{ sheet.degree_centrality[node] }}</td>
+                        <td>{{ sheet.betweenness_centrality[node] }}</td>
+                        <td>{{ sheet.closeness_centrality[node] }}</td>
+                        <td>{{ sheet.eigenvector_centrality[node] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p>Density: {{ sheet.density }}</p>
+    {% if 'diameter' in sheet %}
+    <p>Diameter: {{ sheet.diameter }}</p>
+    {% endif %}
+
+    {% endfor %}
 </div>
 
-{% endblock %}
+<script>
+    // Enable Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+</script>
 
+{% endblock %}
