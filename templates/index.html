@@ -3,76 +3,268 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="main-content-container"> 
-    <style>
-        .card {
-            border-radius: 10px;
-        }
-    </style>
-    <div class="alert alert-danger" role="alert">
-        ⚠️ This is under construction ⚠️
-    </div>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="alert alert-success" role="alert">
-                            📁 Add file explorer of all uploaded datasets
-                        </div>
-                    </div>
-                </div>
+<div id="banner">
+    <h1><span id="socia">Socia</span><span id="lens">Lens</span></h1>
+</div>
+<div class="main-content-container">
+            <h1>Welcome to SociaLens!</h1>
+            <p class="text">Welcome to SociaLens, your gateway to advanced social network analysis. 
+                Our cross-platform application combines user-friendly interfaces with powerful analytical 
+                tools to help researchers, practitioners, and academics explore the complexities of social networks. 
+                Whether you are interested in visualizing connections, understanding network dynamics, or conducting in-depth 
+                statistical analysis, SociaLens equips you with the necessary tools to transform your data into actionable insights. 
+                Join us in navigating the intricate world of networks and unlock the potential of your data. <br><br>
+            </p><a href="/support" type="button" class="btn btn-dark btn-lg">Click Here to Learn About the SociaLens App</a><br><br>
+            <h1>About the Project</h1>
+            <p class="text">SociaLens was conceived as a solution to the limitations of existing social network analysis tools, which often struggle with scalability, have outdated interfaces, and lack advanced analytical capabilities. Our goal is to provide a robust, user-friendly platform that enables detailed social network analysis without the steep learning curve typically associated with such tools. SociaLens is designed to support the needs of researchers, practitioners, and academics, enabling them to conduct complex analyses more efficiently and effectively.</p>
+            <p class="text">The development of SociaLens was driven by a clear need for improved data handling capabilities and more sophisticated statistical tools within the field of social network analysis. By integrating state-of-the-art technology and statistical models, we aim to transform the analytical processes used in studying social networks.</p>
+            <ul>
+                <li><strong>Purpose:</strong> The primary purpose of SociaLens is to enhance the analytical capabilities available to social network analysts by providing them with advanced tools to collect, process, analyze, and visualize network data. This helps in uncovering deeper insights into network dynamics and relationships, which are crucial for effective decision-making and research advancements.</li>
+                <li><strong>Innovation and Accessibility:</strong> We are committed to continuous innovation to keep up with the evolving needs of our users. SociaLens is developed with accessibility in mind, ensuring that users of all technical levels can leverage our advanced tools for their research and professional projects.</li>
+                <li><strong>Impact:</strong> By improving how social networks are analyzed, SociaLens aims to contribute significantly to the field, aiding users in developing a deeper understanding of network structures and their implications. This in turn supports a more informed approach to strategy development and policy making in various domains.</li>
+            </ul>
+            <p class="text">Our mission with SociaLens is not just to build a tool, but to empower our users to achieve more comprehensive, accurate, and insightful analyses of social networks. We strive to push the boundaries of what is possible in social network analysis, making it more intuitive, insightful, and impactful.</p>       
+            <br><br>
+            <h2>Meet the Team</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <!--<img src="{{ url_for('static', filename='images/member1.jpg') }}" class="card-img-top" alt="Team Member Name">-->
+                <div class="card-body">
+                    <h5 class="card-title">Pravin Mark Jayasinghe</h5>
+                    <p>Mark served as the team lead for the SociaLens project, playing a pivotal role in organizing and managing the development sprints. His leadership was instrumental in task delegation and ensuring that project milestones were met on schedule. As the main coder for the statistical and network analysis calculations, Mark developed complex algorithms that are central to the functionality of SociaLens. He also contributed significantly to the general user interface and user experience design, ensuring that the application was powerful in its capabilities..</p>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="alert alert-success" role="alert">
-                            🔎 Add file explorer of all created objects
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="alert alert-primary" role="alert">
-                            📊 Link to vis if already in existence
-                        </div>
-                    </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <!--<img src="{{ url_for('static', filename='images/member1.jpg') }}" class="card-img-top" alt="Team Member Name">-->
+                <div class="card-body">
+                    <h5 class="card-title">Omar Al-Angurli</h5>
+                    <p>Omar, as the co-team lead, worked closely with Mark to facilitate the organization of sprints and the delegation of tasks, ensuring that the team remained on track and cohesive throughout the project development. His primary responsibility was integrating the ChatGPT API, a crucial feature that enhances SociaLens by enabling interactive and intelligent user assistance. Omar's coding expertise and leadership supported the seamless integration of advanced features, contributing significantly to the project's success.  </p>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="alert alert-danger" role="alert">
-                            🍞 Fix breadcrumbs issue
-                        </div>
-                    </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <!--<img src="{{ url_for('static', filename='images/member1.jpg') }}" class="card-img-top" alt="Team Member Name">-->
+                <div class="card-body">
+                    <h5 class="card-title">Priya </h5>
+                    <p>Priya was the lead developer for implementing the descriptive statistics visualizations within SociaLens. Her role was critical in transforming raw data into visually appealing and easy-to-understand graphical representations, making statistical analysis more accessible to users. She was also responsible for various user interface enhancements, which have been praised for their aesthetic appeal and functionality, significantly improving the user experience and engagement with the application. Priya provided crucial support in troubleshooting and optimizing the application's performance .  </p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="alert alert-danger" role="alert">
-                            🌗 Fix darkmode CSS
-                        </div>
-                    </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <!--<img src="{{ url_for('static', filename='images/member1.jpg') }}" class="card-img-top" alt="Team Member Name">-->
+                <div class="card-body">
+                    <h5 class="card-title">Shihab Deen Mohamed</h5>
+                    <p>Shihab was primarily responsible for coding the report generator in SociaLens, an essential component that allows users to compile and export detailed reports of their analyses. His expertise in UI/UX design also manifested in various aspects of the application, ensuring that the interface was clean, responsive, and efficient. Shihab's attention to detail and commitment to usability significantly enhanced the overall functionality of SociaLens, making it a valuable tool for users needing comprehensive reporting capabilities.  </p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="alert alert-success" role="alert">
-                            🦮 Add user guide
-                        </div>
-                    </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <!--<img src="{{ url_for('static', filename='images/member1.jpg') }}" class="card-img-top" alt="Team Member Name">-->
+                <div class="card-body">
+                    <h5 class="card-title">Declan Mewes</h5>
+                    <p>Declan led the development of network analysis visualizations, a key feature that allows users to see and interact with the data in innovative ways. His work involved creating dynamic, intuitive visual tools that help users understand complex network structures at a glance. Declan's contributions to the user interface ensured that these visualizations were not only powerful in their analytical capabilities but also user-friendly, catering to both novice users and expert analysts. Through his work, users of SociaLens are able to gain a visual understanding of their network data</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<h1> Try out our fun game! <button type="button" id="animateButton" class="btn btn-dark">Click me to Start</button> </h1>
+
+<br>
+<canvas width="1000" height="1000" id="game"></canvas>
+<script>
+const animateButton = document.getElementById('animateButton');
+   document.addEventListener('DOMContentLoaded', function() {
+    const banner = document.getElementById('banner');
+
+    function createNumber() {
+        const number = document.createElement('div');
+        number.textContent = Math.floor(Math.random() * 10);
+        number.style.position = 'absolute';
+        number.style.color = 'black';
+        number.style.fontSize = '20px'; // Adjust size as needed
+        number.x = Math.random() * banner.offsetWidth;
+        number.y = Math.random() * banner.offsetHeight;
+        number.dx = (Math.random() - 0.5) * 4; // Speed and direction
+        number.dy = (Math.random() - 0.5) * 4; // Speed and direction
+        number.style.left = number.x + 'px';
+        number.style.top = number.y + 'px';
+        banner.appendChild(number);
+        return number;
+    }
+
+    let numbers = Array.from({length: 70}, createNumber); // Create 10 numbers
+
+    function animate() {
+        numbers.forEach(num => {
+            num.x += num.dx;
+            num.y += num.dy;
+            if (num.x <= 0 || num.x >= banner.offsetWidth - num.offsetWidth) {
+                num.dx *= -1; // Reverse direction on horizontal collision
+            }
+            if (num.y <= 0 || num.y >= banner.offsetHeight - num.offsetHeight) {
+                num.dy *= -1; // Reverse direction on vertical collision
+            }
+            num.style.left = num.x + 'px';
+            num.style.top = num.y + 'px';
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate(); // Start the animation
+});
+var canvas = document.getElementById('game');
+var context = canvas.getContext('2d');
+
+// the canvas width & height, snake x & y, and the apple x & y, all need to be a multiples of the grid size in order for collision detection to work
+// (e.g. 16 * 25 = 400)
+var grid = 16;
+var count = 0;
+
+var snake = {
+  x: 160,
+  y: 160,
+
+  // snake velocity. moves one grid length every frame in either the x or y direction
+  dx: grid,
+  dy: 0,
+
+  // keep track of all grids the snake body occupies
+  cells: [],
+
+  // length of the snake. grows when eating an apple
+  maxCells: 4
+};
+var apple = {
+  x: 320,
+  y: 320
+};
+
+// get random whole numbers in a specific range
+// @see https://stackoverflow.com/a/1527820/2124254
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+// game loop
+function loop() {
+  requestAnimationFrame(loop);
+
+  // slow game loop to 15 fps instead of 60 (60/15 = 4)
+  if (++count < 4) {
+    return;
+  }
+
+  count = 0;
+  context.clearRect(0,0,canvas.width,canvas.height);
+
+  // move snake by it's velocity
+  snake.x += snake.dx;
+  snake.y += snake.dy;
+
+  // wrap snake position horizontally on edge of screen
+  if (snake.x < 0) {
+    snake.x = canvas.width - grid;
+  }
+  else if (snake.x >= canvas.width) {
+    snake.x = 0;
+  }
+
+  // wrap snake position vertically on edge of screen
+  if (snake.y < 0) {
+    snake.y = canvas.height - grid;
+  }
+  else if (snake.y >= canvas.height) {
+    snake.y = 0;
+  }
+
+  // keep track of where snake has been. front of the array is always the head
+  snake.cells.unshift({x: snake.x, y: snake.y});
+
+  // remove cells as we move away from them
+  if (snake.cells.length > snake.maxCells) {
+    snake.cells.pop();
+  }
+
+  // draw apple
+  context.fillStyle = 'red';
+  context.fillRect(apple.x, apple.y, grid-1, grid-1);
+
+  // draw snake one cell at a time
+  context.fillStyle = 'green';
+  snake.cells.forEach(function(cell, index) {
+
+    // drawing 1 px smaller than the grid creates a grid effect in the snake body so you can see how long it is
+    context.fillRect(cell.x, cell.y, grid-1, grid-1);
+
+    // snake ate apple
+    if (cell.x === apple.x && cell.y === apple.y) {
+      snake.maxCells++;
+
+      // canvas is 400x400 which is 25x25 grids
+      apple.x = getRandomInt(0, 25) * grid;
+      apple.y = getRandomInt(0, 25) * grid;
+    }
+
+    // check collision with all cells after this one (modified bubble sort)
+    for (var i = index + 1; i < snake.cells.length; i++) {
+
+      // snake occupies same space as a body part. reset game
+      if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+        snake.x = 160;
+        snake.y = 160;
+        snake.cells = [];
+        snake.maxCells = 4;
+        snake.dx = grid;
+        snake.dy = 0;
+
+        apple.x = getRandomInt(0, 25) * grid;
+        apple.y = getRandomInt(0, 25) * grid;
+      }
+    }
+  });
+}
+
+// listen to keyboard events to move the snake
+document.addEventListener('keydown', function(e) {
+  // prevent snake from backtracking on itself by checking that it's
+  // not already moving on the same axis (pressing left while moving
+  // left won't do anything, and pressing right while moving left
+  // shouldn't let you collide with your own body)
+
+  // left arrow key
+  if (e.which === 37 && snake.dx === 0) {
+    snake.dx = -grid;
+    snake.dy = 0;
+  }
+  // up arrow key
+  else if (e.which === 38 && snake.dy === 0) {
+    snake.dy = -grid;
+    snake.dx = 0;
+  }
+  // right arrow key
+  else if (e.which === 39 && snake.dx === 0) {
+    snake.dx = grid;
+    snake.dy = 0;
+  }
+  // down arrow key
+  else if (e.which === 40 && snake.dy === 0) {
+    snake.dy = grid;
+    snake.dx = 0;
+  }
+});
+
+// start the game
+animateButton.addEventListener('click', function() {
+    requestAnimationFrame(loop);  // Start the animation loop
+});
+    </script>
 {% endblock %}
+

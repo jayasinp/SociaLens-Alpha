@@ -1,0 +1,121 @@
+
+{% block title %}Network Statistics Visualiser{% endblock %}
+
+{% block styles %}
+<style>
+    #cy {
+        width: 100vw;
+        height: 100vh;
+        min-height: 500px;
+    }
+    .cy-tooltip {
+        position: absolute;
+        background-color: white;
+        color: black;
+        border: solid 1px black;
+        padding: 5px;
+        display: none;
+        font-size: 14px;
+        z-index: 999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content-container">
+    <button onclick="restoreOriginalGraph()">Restore Original Graph</button>
+    <select id="filter">
+        <option value="all">View All</option>
+        <option value="centrality">Highlight Centrality</option>
+        <option value="community">Community Detection</option>
+        <option value="degree">Highlight by Degree</option>
+        <option value="components">Show Connected Components</option>
+    </select>
+    <div id="cy"></div>
+    <div id="tooltip" class="cy-tooltip"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
+    <script>
+        console.log({{ graph_data['elements'] | tojson | safe }});
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: {{ graph_data['elements'] | tojson }},
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#666',
+                        'label': 'data(id)',
+                        'color': '#fff',
+                        'text-outline-color': '#666',
+                        'text-outline-width': 1,
+                        'text-valign': 'center',
+                        'text-halign': 'center'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#ccc',
+                        'target-arrow-color': '#ccc',
+                        'target-arrow-shape': 'triangle'
+                    }
+                }
+            ],
+            layout: {
+                name: 'cose',
+                idealEdgeLength: 100,
+                nodeRepulsion: function( node ){ return 2048; }
+            }
+        });
+
+        cy.on('mouseover', 'node', function(event) {
+            var node = event.target;
+            var tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `ID: ${node.data('id')}<br>
+                                 Degree: ${node.data('degree')}<br>
+                                 Centrality: ${node.data('centrality').toFixed(2)}<br>
+                                 Community: ${node.data('community')}`;
+            tooltip.style.display = 'block';
+            tooltip.style.top = event.originalEvent.clientY + 5 + 'px';
+            tooltip.style.left = event.originalEvent.clientX + 5 + 'px';
+        });
+
+        cy.on('mouseout', 'node', function(event) {
+            var tooltip = document.getElementById('tooltip');
+            tooltip.style.display = 'none';
+        });
+
+        function restoreOriginalGraph() {
+            cy.json(originalGraphData);
+            cy.layout({name: 'cose'}).run();
+        }
+
+        document.getElementById('filter').addEventListener('change', function() {
+            var value = this.value;
+            cy.nodes().forEach(node => {
+                switch (value) {
+                    case 'centrality':
+                        var centrality = node.data('centrality');
+                        node.style('background-color', `hsl(${centrality * 360}, 100%, 50%)`);
+                        break;
+                    case 'community':
+                        var community = node.data('community');
+                        node.style('background-color', `hsl(${community * 360 / 5}, 100%, 70%)`);
+                        break;
+                    case 'degree':
+                        var degree = node.data('degree');
+                        node.style('background-color', `hsl(${degree * 360 / 20}, 100%, 50%)`);
+                        break;
+                    case 'components':
+                        var component = node.data('component');
+                        node.style('background-color', `hsl(${component * 360 / 20}, 100%, 70%)`);
+                        break;
+                    default:
+                        node.style('background-color', '#666');
+                }
+            });
+        });
+    </script>
+</div>
+{% endblock %}

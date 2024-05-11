@@ -1,0 +1,14 @@
+Call:
+ergm(formula = net ~ edges)
+
+Maximum Likelihood Results:
+
+      Estimate Std. Error MCMC % z value Pr(>|z|)    
+edges -2.85066    0.03566      0  -79.95   <1e-04 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+     Null Deviance: 21106  on 15225  degrees of freedom
+ Residual Deviance:  6455  on 15224  degrees of freedom
+ 
+AIC: 6457  BIC: 6464  (Smaller is better. MC Std. Err. = 0)

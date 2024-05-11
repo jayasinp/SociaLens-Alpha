@@ -68,11 +68,6 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/data-cleaner" class="nav-link {{ 'active' if request.path == '/data-cleaner' else '' }}">
-                    <span class="emoji">🛁 </span> Cleaner 
-                </a>
-            </li> 
-            <li class="nav-item">
                 <a href="/data-scraper" class="nav-link {{ 'active' if request.path == '/data-scraper' else '' }}">
                     <span class="emoji">🕵️ </span> Scraper 
                 </a>
@@ -107,8 +102,13 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="/network_stats_vis" class="nav-link {{ 'active' if request.path == '/network_stats_vis' else '' }}">
+                    <span class="emoji">🕷️ </span> Network Statistics Visualiser
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="/chatbot" class="nav-link {{ 'active' if request.path == '/chatbot' else '' }}">
-                    <span class="emoji">🤖 </span> Chatbot
+                    <span class="emoji">🤖 </span> O-MACHINE
                 </a>
             </li>
             <li class="nav-item">
@@ -120,21 +120,6 @@
         </ul>
         <h5 class="text-primary">Other</h5>
         <ul class="nav flex-column">
-            <li class="nav-item">
-                <a href="/selector" class="nav-link {{ 'active' if request.path == '/selector' else '' }}">
-                    <span class="emoji">⤵️ </span> Selector Demo
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/login" class="nav-link {{ 'active' if request.path == '/login' else '' }}">
-                    <span class="emoji">👤 </span> User Profile
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/settings" class="nav-link {{ 'active' if request.path == '/settings' else '' }}">
-                    <span class="emoji">⚙️ </span> Settings
-                </a>
-            </li>
             <li class="nav-item">
                 <a href="/support" class="nav-link {{ 'active' if request.path == '/support' else '' }}">
                     <span class="emoji">🛠️ </span> Support

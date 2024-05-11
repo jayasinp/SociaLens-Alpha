@@ -5,6 +5,7 @@
     <div class="main-content-container">
     <!-- CSS styles -->
     <style>
+         /* Styling for table header */
         .table-bordered thead .custom-th {
             padding-left: 2px;
             padding-right: 2px;
@@ -12,6 +13,7 @@
             background: #013B7A;
             color: white;
         }
+        /* Styling for graph container */
         .graph-container {
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -23,6 +25,7 @@
     <h2>Select Dataset and Sheet</h2>
     <div class="row">
         <div class="col-md-6">
+             <!-- Dropdown for selecting dataset -->
             <label for="file-select" class="form-label fw-bold">Choose a dataset:</label>
             <select id="file-select" name="file-select" class="form-select" onchange="updateSheets()">
                 <option value="">Select a file...</option>
@@ -32,37 +35,50 @@
             </select>
         </div>
         <div class="col-md-6">
+             <!-- Dropdown for selecting sheet -->
             <label for="sheet-select" class="form-label fw-bold">Choose a sheet:</label>
             <select id="sheet-select" name="sheet-select" class="form-select" onchange="showTable();">
                 <option value="">Select a sheet...</option>
             </select>
         </div>
+        
+        <div id="column-checkboxes"></div>
+        <!-- Checkbox for selecting visualization -->
+        <h2>Select a visualization for dataset</h2>
+        <div id="toolbar">
+            <label><input type="checkbox" class="vis-checkbox" data-target="statistics-table"> Table</label>
+            <label><input type="checkbox" class="vis-checkbox" data-target="visualization"> Visualization</label>
+        </div>
     </div>
 </div>
 
-<div id="toolbar">
-    <label><input type="checkbox" class="vis-checkbox" data-target="statistics-table"> Table</label>
-    <label><input type="checkbox" class="vis-checkbox" data-target="visualization"> Visualization</label>
-    <!-- Add more checkboxes for other visualization types -->
-</div>
-
+<!-- Container for displaying statistics table -->
 <div id="statistics-table" style="display: none;">
     <!-- Table will be displayed here -->
 </div>
-<!-- Visualization section -->
+
+<!-- Container for displaying visualization -->
 <div id="visualization" style="display: none;"></div>
 
+
+
+
+<!-- JavaScript libraries -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
+    // Function to update the dropdown for selecting sheets
     function updateSheets() {
+         // Get the selected filename
         var fileName = $('#file-select').val();
         if (fileName) {
+             // Fetch the list of sheets via AJAX
             $.ajax({
                 url: '/get-sheets',
                 type: 'POST',
                 data: { filename: fileName },
                 success: function(response) {
+                    // Update the dropdown with sheet names
                     $('#sheet-select').empty();
                     $('#sheet-select').append('<option value="">Select a sheet...</option>');
                     response.sheets.forEach(function(sheet) {
@@ -72,21 +88,25 @@
             });
         }
     }
-
+    // Function to display statistics table
     function showTable() {
+     // Get selected filename and sheetname
     var fileName = $('#file-select').val();
     var sheetName = $('#sheet-select').val();
     if (fileName && sheetName) {
+        // Fetch statistics data via AJAX
         $.ajax({
             url: '/get-statistics',
             type: 'POST',
             data: { filename: fileName, sheetname: sheetName },
             success: function(response) {
+                 // Construct HTML for statistics table
                 console.log("Response received:", response);
                 var tableHtml = '<h2>Statistics Summary</h2>';
                 tableHtml += '<h3>' + fileName + '</h3>';
                 tableHtml += '<h4>' + sheetName + '</h4>';
                 tableHtml += '<table class="table table-bordered table-hover">';
+                // Construct table headers
                 tableHtml += '<thead>';
                 tableHtml += '<tr class="bg-royalblue text-white">';
                 tableHtml += '<th class="col-1 custom-th">Column</th>';
@@ -99,11 +119,13 @@
                 tableHtml += '<th class="col-1 custom-th">Kurtosis</th>';
                 tableHtml += '</tr>';
                 tableHtml += '</thead>';
+                 // Construct table body
                 tableHtml += '<tbody>';
                 var emptyTable = true;
                 $.each(response.statistics, function(column, stats) {
                     // Check if the column contains "ID" in its name
                     if (!column.toLowerCase().includes('id')) {
+                         // Populate table rows with statistics data
                         emptyTable = false;
                         console.log("Column:", column, "Stats:", stats);
                         tableHtml += '<tr>';
@@ -123,27 +145,63 @@
                 }
                 tableHtml += '</tbody>';
                 tableHtml += '</table>';
+                // Display statistics table
                 $('#statistics-table').html(tableHtml);
-                // Call the updateVisualization function after updating the table
-                updateVisualization();
+                //Call the function to fetch and display column names
+                fetchAndDisplayColumnNames(fileName, sheetName);
+                
             }
         });
     }
     else {
         $('#statistics-table').empty();
+       
     }
 }
+// Function to fetch and display column names with checkboxes
+function fetchAndDisplayColumnNames(fileName, sheetName) {
+    $.ajax({
+        url: '/get-columns',
+        type: 'POST',
+        data: { filename: fileName, sheetname: sheetName },
+        success: function(response) {
+            console.log('Response:', response); // Log the entire response object
+            if (response && response.numeric_columns) {
+                // Clear previous checkboxes
+                $('#column-checkboxes').empty();
 
-    function updateVisualization() {
-        // Get the element with id "visualization"
-        var visualizationElement = document.getElementById("visualization");
-        // Set its innerHTML to the message
-        visualizationElement.innerHTML = "This is a message printed from inside a function.";
-        var fileName = $('#file-select').val();
-var sheetName = $('#sheet-select').val();
+                // Iterate over column names and create checkboxes for each column
+                response.numeric_columns.forEach(function(column) {
+                    var checkboxHtml = '<div><input type="checkbox" name="' + column + '" value="' + column + '"> <label for="' + column + '">' + column + '</label></div>';
+                    $('#column-checkboxes').append(checkboxHtml);
+                });
 
-if (fileName && sheetName) {
-    $(document).ready(function() {
+                // Register event handler for checkbox changes if not already registered
+                if (!$._data($('#column-checkboxes')[0], 'events')) {
+                    $('#column-checkboxes').on('change', 'input[type="checkbox"]', function() {
+                        updateVisualization();
+                    });
+                }
+            } else {
+                console.error('Invalid or missing response:', response);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching numeric column names:', error);
+        }
+    });
+}
+
+
+    // Function to update visualization
+function updateVisualization() {
+    // Clear previous visualization
+    $('#visualization').empty();
+    
+    var fileName = $('#file-select').val();
+    var sheetName = $('#sheet-select').val();
+
+    if (fileName && sheetName) {
         console.log("Fetching list of files...");
         // Fetch the list of filenames
         $.ajax({
@@ -153,6 +211,7 @@ if (fileName && sheetName) {
                 console.log("List of files received:", files);
                 // Iterate over each filename and fetch its data
                 files.forEach(function(filename) {
+                    // Fetch data for each file via AJAX
                     console.log("Fetching data for file:", filename);
 
                     $.ajax({
@@ -164,20 +223,28 @@ if (fileName && sheetName) {
                             if (sheetName in data) {
                                 console.log("Selected sheet found:", sheetName);
                                 var sheetData = data[sheetName];
-                                Object.keys(sheetData).forEach(function(metric) {
+
+                                // Array to hold selected columns
+                                var selectedColumns = [];
+                                
+                                // Iterate over checkboxes to get selected columns
+                                $('input[type="checkbox"]:checked').each(function() {
+                                    selectedColumns.push($(this).val());
+                                });
+
+                                // Iterate over each selected column and display its graph
+                                selectedColumns.forEach(function(metric) {
                                     console.log("Processing metric:", metric);
                                     var dataPoints = sheetData[metric];
-
-                                    // Extract values for the current metric
+                                    // Log the selected column
+                                    console.log("Selected column:", metric);
+                                    // Extract values for the current column
                                     var flattenedData = Object.values(dataPoints).map(d => parseFloat(d)).filter(d => !isNaN(d));
                                     console.log("Flattened data:", flattenedData);
                                     // Determine the maximum value to set the y-axis limit
                                     var maxY = Math.max(...flattenedData);
                                     var yLimit = maxY > 0.1 ? 0.15 : 0.5;
                                     console.log("MaxY:", maxY, "YLimit:", yLimit);
-                                    
-                                    
-                                    
                                     // Define scales
                                     var margin = {top: 30, right: 30, bottom: 50, left: 50},
                                         width = 500 - margin.left - margin.right,
@@ -187,18 +254,13 @@ if (fileName && sheetName) {
                                     var xScale = d3.scaleLinear()
                                                    .domain([-10, 10])
                                                    .range([0, width]);
-                                    // Define kernel density estimator for normal distribution
-                                    var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
-                                    var density = kde(flattenedData);
-                                    console.log("Density:", density);
-                                    var maxDensity = d3.max(density.map(d => d[1]));
-                                    console.log("Max Density:", maxDensity);
-                                    var yScale = d3.scaleLinear()
-                                                   .domain([0, maxDensity])
-                                                   .range([height, 0]);
 
+                                    var yScale = d3.scaleLinear()
+                                                   .domain([0, 0.30])
+                                                   .range([height, 0]);
+                                    
                                     // Set up SVG for the current column
-                                    console.log("Creating SVG for", sheetName);
+                                    console.log("Creating SVG for", metric);
                                     var svg = d3.select("#visualization")
                                                 .append("div")
                                                 .attr("class", "graph-container")
@@ -215,33 +277,11 @@ if (fileName && sheetName) {
                                         .attr("text-anchor", "middle")
                                         .attr("font-size", "20px")
                                         .text(sheetName + ' - ' + metric);
-                                        
 
-                                    
-                                    
-                                    // To draw the mean line: Calculate the sum product of all densities and x values and the sum of all densities
-                                    let sum_total = 0;
-                                    for (let i = 0; i < density.length; i++) {
-                                        sum_total += (density[i][1]*density[i][0]);
-                                    }
-                                    let sum = 0 ;
-                                    for (let i = 0; i < density.length; i++) {
-                                        sum += (density[i][1]);
-                                    }
+                                    // Define kernel density estimator for normal distribution
+                                    var kde = kernelDensityEstimator(kernelGaussian(7), xScale.ticks(40));
+                                    var density = kde(flattenedData);
 
-                                    // Calculate the mean density
-                                    let meanDensity = sum_total / sum;
-                                    
-                                    // Draw mean line
-                                    svg.append("line")
-                                       .attr("x1", xScale(meanDensity))
-                                       .attr("x2", xScale(meanDensity))
-                                       .attr("y1", yScale(0))
-                                       .attr("y2", yScale(maxDensity))
-                                       .attr("stroke", "red")
-                                       .attr("stroke-width", 2);
-
-                                    console.log("Mean Density:", meanDensity);
                                     // Draw KDE line
                                     var line = d3.line()
                                                  .x(d => xScale(d[0]))
@@ -290,8 +330,10 @@ if (fileName && sheetName) {
                 console.error('Error fetching the list of files:', error);
             }
         });
-    });
+    }
 }
+
+
 
 // Kernel density estimation
 function kernelDensityEstimator(kernel, x) {
@@ -301,13 +343,13 @@ function kernelDensityEstimator(kernel, x) {
         });
     };
 }
-
+ // Gaussian kernel function
 function kernelGaussian(k) {
     return function(v) {
         return Math.exp(-0.5 * v * v) / Math.sqrt(2 * Math.PI);
     };
 }
-    }
+    
 
     // Event handler for checkbox changes
     $('.vis-checkbox').change(function() {

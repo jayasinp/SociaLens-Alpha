@@ -11,13 +11,16 @@ from datetime import datetime
 import pandas as pd
 from descriptive_statistics import analyze_file
 from calculate_network_statistics import calculate_network_statistics
-#from ergm import process_file
-#from chatbot import talktogpt
+from chatbot import talktogpt
 import reportlab
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from d3_translator import convert_network_to_json
+import networkx as nx
+import community as community_louvain
+from glob import glob
+import re
 
 
 
@@ -35,7 +38,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB upload limit
 # Ensure the upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
 # Set the path for the json folder
 JSON_FOLDER = 'json_objects'
 JSON_EXTENSIONS = {'json'}
@@ -316,6 +318,7 @@ def analyze_data():
 # NETWORK STATISTICS NAVIGATION ROUTE
 @app.route('/network-statistics', methods=['GET', 'POST'])
 def network_statistics():
+    breadcrumbs = [("Home", "/"), ("Network Statistics", "/network-statistics")]
     if request.method == 'POST':
         selected_folder = request.form.get('selectedFolder')
         selected_file = request.form.get('selectedFile')
@@ -345,49 +348,27 @@ def network_statistics():
         # This might be redundant now since we are using dynamic JavaScript loading
         return render_template('network_statistics.html')
     
-# ERGM ROUTE
+# ERGM UI ROUTE
 @app.route('/ergm', methods=['GET', 'POST'])
 def ergm():
-    if request.method == 'POST':
-        selected_folder = request.form.get('selectedFolder')
-        selected_file = request.form.get('selectedFile')
-        if not selected_folder or not selected_file:
-            flash("Please select both a folder and a file.", 'warning')
-            return redirect(url_for('ergm'))
-        
-        file_path = os.path.join(app.config['RAW_DATA_FOLDER'], selected_folder, selected_file)
-        if not os.path.exists(file_path):
-            flash(f"Selected file {file_path} does not exist.", 'danger')
-            return redirect(url_for('ergm'))
+    breadcrumbs = [("Home", "/"), ("ERGM", "/ergm")]
+    # Using glob to recursively find all .txt files within ERGM_data and its subdirectories
+    files = [os.path.relpath(f, start='ERGM_data') for f in glob('ERGM_data/**/*.txt', recursive=True)]
+    return render_template('ergm.html', breadcrumbs=breadcrumbs, files=files)
 
-        # Clean the file by removing self-loops and parallel edges
-        try:
-            edgelist = pd.read_excel(file_path)
-            # Remove self-loops
-            cleaned_edgelist = edgelist[edgelist['Source'] != edgelist['Target']]
-            # Remove parallel edges (duplicates)
-            cleaned_edgelist = cleaned_edgelist.drop_duplicates(subset=['Source', 'Target'], keep='first')
-            # Create a directory for cleaned files if it doesn't already exist
-            cleaned_dir = os.path.join(app.config['RAW_DATA_FOLDER'], 'cleaned_network_objects')
-            os.makedirs(cleaned_dir, exist_ok=True)
-            # Save the cleaned data to the new directory
-            cleaned_file_path = os.path.join(cleaned_dir, 'cleaned_' + selected_file)
-            cleaned_edgelist.to_excel(cleaned_file_path, index=False)
-        except Exception as e:
-            flash(f"Failed to clean the file: {str(e)}", 'danger')
-            return redirect(url_for('ergm'))
+@app.route('/ergm_results', methods=['POST'])
+def ergm_results():
+    selected_file = request.form['filename']
+    file_path = os.path.join('ERGM_data', selected_file)  # Updated to ensure the correct path
+    with open(file_path, 'r') as file:
+        content = file.read()
 
-        try:
-            # Assuming process_file can handle the new cleaned file path
-            ergm_results = process_file(cleaned_file_path)
-            return render_template('ergm_results.html', ergm_results=ergm_results, filename=selected_file)
-        except Exception as e:
-            flash(f"Failed to calculate ERGM: {str(e)}", 'danger')
-            return redirect(url_for('ergm'))
+    # REGEX to remove just the important bits
+    pattern = re.compile(r"Estimate.+?\*\*\*\nedges.+?\n---|Null Deviance.+?Std\. Err\. = 0", re.S)
+    extracted_content = '\n'.join(pattern.findall(content))
+    
+    return render_template('ERGM_results.html', content=extracted_content)
 
-    else:
-        folders = [f for f in os.listdir(app.config['RAW_DATA_FOLDER']) if os.path.isdir(os.path.join(app.config['RAW_DATA_FOLDER'], f))]
-        return render_template('ergm.html', folders=folders)
 
 # Helper to populate files based on selected folder
 @app.route('/api/files/<folder>')
@@ -403,6 +384,7 @@ def files_for_folder(folder):
 #App route for selecting the dataset for the chatbot
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
+    breadcrumbs = [("Home", "/"), ("ChatBot", "/chatbot")]
     # Load available files for the selection dropdown
     files = [f for f in os.listdir('uploads') if f.endswith('.xlsx')]
     return render_template('chatbot.html', files=files)
@@ -439,7 +421,7 @@ def chat_interface():
         except Exception as e:
             file_contents = f"Failed to read the file: {str(e)}"
     else:
-        file_contents = "File does not exist."
+        file_contents = "File does not exist." 
     # save file contents to session
     session['file_contents']=file_contents
     return render_template('chat-interface.html', filePath=file_path, selector=selector, file_contents=file_contents, stored_message=stored_message, response=response)
@@ -613,6 +595,36 @@ def get_network_json_data(filename):
         data = json.load(file)
         
     return jsonify(data)
+
+# NETWORK STATISTICS VISUALISER ROUTES 
+def analyze_graph(G):
+    # Calculate centrality, community detection, and other attributes
+    centrality = nx.degree_centrality(G)
+    nx.set_node_attributes(G, centrality, 'centrality')
+    partition = community_louvain.best_partition(G)
+    nx.set_node_attributes(G, partition, 'community')
+    degrees = dict(G.degree())
+    nx.set_node_attributes(G, degrees, 'degree')
+    components = list(nx.connected_components(G))
+    component_dict = {node: idx for idx, comp in enumerate(components) for node in comp}
+    nx.set_node_attributes(G, component_dict, 'component')
+    return G
+
+@app.route('/network_stats_vis', methods=['GET', 'POST'])
+def network_stats_vis():
+    if request.method == 'POST':
+        selected_file = request.form['file']
+        filepath = os.path.join('raw_data_objects', selected_file)
+        df = pd.read_excel(filepath, header=None)
+        G = nx.from_pandas_edgelist(df, source=0, target=1)
+        G = analyze_graph(G)
+        graph_json = nx.cytoscape_data(G)
+        print(graph_json)
+        return render_template('network_stats_graph.html', graph_data=graph_json)
+
+    # Display available .xlsx files within directories under raw_data_objects
+    files = [os.path.relpath(f, start='raw_data_objects') for f in glob('raw_data_objects/**/*.xlsx', recursive=True)]
+    return render_template('network_stats_vis.html', files=files)
 
 # REPORT GENERATOR ROUTE
 # Creates a blank UI work-in-progress
