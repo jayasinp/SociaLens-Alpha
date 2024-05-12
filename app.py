@@ -820,6 +820,23 @@ def create_json_graph(file_path):
     except Exception as e:
         return {'error': str(e)}, None
     
+
+@app.route('/get-columns', methods=['POST'])
+def get_columns():
+    try:
+        # Extract filename and sheetname from the request
+        filename = request.form['filename']
+        sheetname = request.form['sheetname']
+        # Read the Excel file
+        xls = pd.ExcelFile(os.path.join('uploads', filename))
+        # Get the columns of the specified sheet
+        df = pd.read_excel(xls, sheet_name=sheetname)
+        # Filter out numeric columns
+        numeric_columns = df.select_dtypes(include=['number']).columns.tolist()
+        return jsonify({'numeric_columns': numeric_columns})
+    except Exception as e:
+        return jsonify({'error': str(e)})    
+    
 # Function to check if file has allowed extension
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

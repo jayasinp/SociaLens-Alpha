@@ -3,11 +3,34 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div id="banner">
-    <h1><span id="socia">Socia</span><span id="lens">Lens</span></h1>
-</div>
+<style>
+  #banner {
+      width: 100%;
+      text-align: center;
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #f8f9fa; /* light gray background for visibility */
+      border: 1px solid #dee2e6; /* subtle border */
+  }
+  #socia, #lens {
+      display: inline-block;
+      font-weight: bold;
+  }
+  #socia {
+      color: #007bff; /* Bootstrap primary blue */
+  }
+  #lens {
+      color: #6c757d; /* Bootstrap secondary gray */
+  }
+  .text {
+      margin-bottom: 20px;
+  }
+</style>
 <div class="main-content-container">
             <h1>Welcome to SociaLens!</h1>
+            <div id="banner">
+              <h1><span id="socia">Socia</span><span id="lens">Lens</span></h1>
+            </div>
             <p class="text">Welcome to SociaLens, your gateway to advanced social network analysis. 
                 Our cross-platform application combines user-friendly interfaces with powerful analytical 
                 tools to help researchers, practitioners, and academics explore the complexities of social networks. 

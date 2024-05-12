@@ -1,7 +1,7 @@
 import openai
 def talktogpt(input):
     #OpenAI API Key
-    openai.api_key = 'sk-proj-v1TyanYBgr7qlu6ASERGT3BlbkFJPfyMCcoGTvlXFbPDhISg'
+    #openai.api_key = 'sk-proj-v1TyanYBgr7qlu6ASERGT3BlbkFJPfyMCcoGTvlXFbPDhISg'
     gpt = openai.chat.completions.create(
                 messages=[
                     {

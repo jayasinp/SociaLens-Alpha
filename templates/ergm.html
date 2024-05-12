@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="main-content-container">
+<div class="container mt-4">
     <form action="/ergm_results" method="post">
-        <label for="file-select">Choose a file:</label>
-        <select id="file-select" name="filename">
-            {% for file in files %}
-            <option value="{{ file }}">{{ file }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Submit</button>
+        <h1 class="mb-3">Select ERGM File</h1>
+        <div class="mb-3">
+            <label for="file-select" class="form-label">Choose a file:</label>
+            <select id="file-select" name="filename" class="form-select">
+                {% for file in files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 {% endblock %}

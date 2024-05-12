@@ -92,8 +92,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/ergm" class="nav-link {{ 'active' if request.path == '/network-statistics' else '' }}">
-                    <span class="emoji">𐄳 </span> ERGM
+                <a href="/network_stats_vis" class="nav-link {{ 'active' if request.path == '/network_stats_vis' else '' }}">
+                    <span class="emoji">🕷️ </span> Network Statistics Visualiser
                 </a>
             </li>
             <li class="nav-item">
@@ -102,13 +102,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="/network_stats_vis" class="nav-link {{ 'active' if request.path == '/network_stats_vis' else '' }}">
-                    <span class="emoji">🕷️ </span> Network Statistics Visualiser
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/chatbot" class="nav-link {{ 'active' if request.path == '/chatbot' else '' }}">
-                    <span class="emoji">🤖 </span> O-MACHINE
+                <a href="/ergm" class="nav-link {{ 'active' if request.path == '/network-statistics' else '' }}">
+                    <span class="emoji">𐄳 </span> ERGM
                 </a>
             </li>
             <li class="nav-item">
@@ -116,6 +111,11 @@
                     <span class="emoji">📄 </span> Report Generator
                 </a>
             </li> 
+            <li class="nav-item">
+                <a href="/chatbot" class="nav-link {{ 'active' if request.path == '/chatbot' else '' }}">
+                    <span class="emoji">🤖 </span> O-MACHINE
+                </a>
+            </li>
             <hr> 
         </ul>
         <h5 class="text-primary">Other</h5>

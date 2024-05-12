@@ -4,35 +4,39 @@
 
 {% block content %}
 <div class="main-content-container">
-<div class="container">
-    <h1>Select Dataset and Sheet for Chat</h1>
-    <div id="file-and-sheet-selection">
-        <h2>Choose Dataset and Sheet</h2>
-        <label for="file-select">Choose a dataset:</label>
-        <select id="file-select" name="file-select" onchange="updateSheets()">
-            <option value="">Select a file...</option>
-            {% for file in files %}
-            <option value="{{ file }}">{{ file }}</option>
-            {% endfor %}
-        </select>
+    <div class="container">
+        <h1>Select Dataset and Sheet for Chat</h1>
+        <div id="file-and-sheet-selection">
+            <h2>Choose Dataset and Sheet</h2>
+            <div class="mb-3">
+                <label for="file-select" class="form-label">Choose a dataset:</label>
+                <select id="file-select" name="file-select" class="form-select" onchange="updateSheets()">
+                    <option value="">Select a file...</option>
+                    {% for file in files %}
+                    <option value="{{ file }}">{{ file }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <br><br>
+            <div class="mb-3">
+                <label for="sheet-select" class="form-label">Choose a sheet:</label>
+                <select id="sheet-select" name="sheet-select" class="form-select">
+                    <option value="">Select a sheet...</option>
+                </select>
+            </div>
 
-        <label for="sheet-select">Choose a sheet:</label>
-        <select id="sheet-select" name="sheet-select">
-            <option value="">Select a sheet...</option>
-        </select>
-        <br><br>
-
-        <label for="filePath-select">Are you wanting to discuss network or descriptive stats?</label>
-        <select id="filePath-select" name="filePath-select" onchange="enableChat()">
-            <option value="">Please Select</option>
-            <option value="network">Network</option>
-            <option value="descriptive">Descriptive</option>
-            <option value="ERGM_data">EGRM</option>
-        </select>
+            <div class="mb-3">
+                <label for="filePath-select" class="form-label">Are you wanting to discuss network or descriptive stats?</label>
+                <select id="filePath-select" name="filePath-select" class="form-select" onchange="enableChat()">
+                    <option value="">Please Select</option>
+                    <option value="network">Network</option>
+                    <option value="descriptive">Descriptive</option>
+                </select>
+            </div>
+        </div>
     </div>
 </div>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>

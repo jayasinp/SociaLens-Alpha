@@ -3,17 +3,18 @@
 {% block title %}Network Statistics Visualiser{% endblock %}
 
 {% block content %}
-
-<div class="main-content-container">
+<div class="container mt-4">
     <h1 class="mb-3">Select Network File</h1>
     <form action="/network_stats_vis" method="post">
-        <label for="file-select">Choose a file:</label>
-        <select id="file-select" name="file">
-            {% for file in files %}
-            <option value="{{ file }}">{{ file }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Load Graph">
+        <div class="mb-3">
+            <label for="file-select" class="form-label">Choose a file:</label>
+            <select id="file-select" name="file" class="form-select">
+                {% for file in files %}
+                <option value="{{ file }}">{{ file }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="Load Graph" class="btn btn-primary">
     </form>
 </div>
 {% endblock %}
