@@ -3,6 +3,30 @@ body, html {
     margin: 0;
 }
 
+#banner {
+    background: linear-gradient(to right, White, white  );
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#banner h1 {
+    color: #FFFFFF;  /* Default text color, used here to set an example, could be omitted if not needed */
+    font-size: 7em;  /* Adjust size as needed */
+    margin-top: 5%;       /* Removes default margin from h1 */
+    text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px  2px 0 #000,
+        2px  2px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px  1px 0 #000,
+        1px  1px 0 #000;
+}
+
 label.check span {
     padding: 7px 14px; 
     border: none; /* Removes the default border */
