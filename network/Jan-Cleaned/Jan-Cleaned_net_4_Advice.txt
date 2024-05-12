@@ -1,0 +1,5 @@
+Network Summary Statistics:
+Number of Nodes: 161
+Number of Edges: 315
+Density: 0.0245 (Indicates how many edges are in the graph compared to the maximum possible number of edges)
+Average Degree: 3.9130 (Average number of connections per node)
