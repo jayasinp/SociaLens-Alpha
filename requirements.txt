@@ -1,0 +1,10 @@
+Flask==2.1.2
+Jinja2==3.1.2
+Werkzeug==2.1.2
+requests==2.27.1
+beautifulsoup4==4.11.1
+pandas==1.4.2
+reportlab==3.6.9
+networkx==2.8
+python-louvain==0.16  
+rpy2==3.5.2
