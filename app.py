@@ -83,58 +83,76 @@ def selector():
     return render_template('selector.html', breadcrumbs=breadcrumbs, files=files)
 
 # DATA SCRAPER ROUTE
+#@app.route('/data-scraper', methods=['GET', 'POST'])
+#def data_scraper():
+#    if request.method == 'POST':
+#        url = request.form['url']
+#        return redirect(url_for('results', url=url))   
+#    breadcrumbs = [("Home", "/"), ("Data Scraper", "/data-scraper")]
+#    return render_template('data_scraper.html', breadcrumbs=breadcrumbs)
+
+def scrape_wikipedia(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Ensure the response is successful
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        page_title = soup.find('h1').text if soup.find('h1') else "No Title"
+        links = []
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            if href.startswith('/wiki/') and not ':' in href:  # Excluding special pages
+                full_link = 'https://en.wikipedia.org' + href
+                links.append(full_link)
+        
+        return page_title, links, create_network_json(url, links)
+    except Exception as e:
+        print(f"Failed to scrape {url} due to {e}")
+        return "Error", [], {}
+
+def create_network_json(origin, links):
+    nodes = [{'data': {'id': origin, 'label': origin.split('/')[-1], 'origin': True}}]
+    nodes += [{'data': {'id': link, 'label': link.split('/')[-1], 'origin': False}} for link in links if link != origin]
+    edges = [{'data': {'source': origin, 'target': link}} for link in links if link != origin]
+    return {'elements': nodes + edges}
+
 @app.route('/data-scraper', methods=['GET', 'POST'])
 def data_scraper():
     if request.method == 'POST':
         url = request.form['url']
-        return redirect(url_for('results', url=url))   
-    breadcrumbs = [("Home", "/"), ("Data Scraper", "/data-scraper")]
-    return render_template('data_scraper.html', breadcrumbs=breadcrumbs)
+        return redirect(url_for('data_scraper_vis', url=url))
+    return render_template('data_scraper.html')
 
-# DATA SCRAPER VISUALISATION ROUTE
 @app.route('/results')
-def results():
+def data_scraper_vis():
     url = request.args.get('url', '')
-    return render_template('data_scraper_vis.html', url=url)
+    page_title, links, graph_json = scrape_wikipedia(url)
+    save_data(url, graph_json)
+    return render_template('data_scraper_vis.html', url=url, page_title=page_title, links=links)
 
+def save_data(url, data):
+    sanitized_title = re.sub(r'[^\w\s-]', '', url.replace('https://', '').replace('http://', '').replace('www.', ''))
+    sanitized_title = re.sub(r'[-\s]+', '-', sanitized_title).strip('-_')
+    filename = os.path.join('scraped_data', f'{sanitized_title}.json')
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=4)
+
+@app.route('/network.json')
+def network_json():
+    url = request.args.get('url', '')
+    sanitized_title = re.sub(r'[^\w\s-]', '', url.replace('https://', '').replace('http://', '').replace('www.', ''))
+    sanitized_title = re.sub(r'[-\s]+', '-', sanitized_title).strip('-_')
+    filename = os.path.join('scraped_data', f'{sanitized_title}.json')
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    return jsonify(data)
 # DATA CLEANER ROUTE
 @app.route('/data-cleaner')
 def data_cleaner():
     breadcrumbs = [("Home", "/"), ("Data Cleaner", "/data-cleaner")]
     return render_template('data_cleaner.html', breadcrumbs=breadcrumbs)
 
-# DATA SCRAPER LOGIC
-@app.route('/network.json')
-def network_json():
-    url = request.args.get('url', '')
-    links, graph_json = scrape_wikipedia(url)
-    save_data(url, graph_json)  # Save the scraped data to a file
-    return jsonify(graph_json)
 
-def scrape_wikipedia(url):
-    try:
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        links = []
-        for link in soup.find_all('a', href=True):
-            href = link['href']
-            if href.startswith('/wiki/') and not ':' in href:
-                full_link = 'https://en.wikipedia.org' + href
-                links.append(full_link)
-        return links, create_network_json(url, links)
-    except requests.RequestException:
-        return [], {}
-
-def create_network_json(url, links):
-    nodes = [{'data': {'id': url, 'label': url.split('/')[-1]}}]
-    nodes.extend({'data': {'id': link, 'label': link.split('/')[-1]}} for link in links)
-    edges = [{'data': {'source': url, 'target': link}} for link in links]
-    return {'nodes': nodes, 'edges': edges}
-
-def save_data(url, data):
-    directory = 'scraped_data'
-    if not os.path.exists(directory):
-        os.makedirs(directory)  # Create directory if it does not exist
 
     # Create a valid filename from the URL
     filename = url.replace('https://', '').replace('http://', '').replace('/', '_') + '.json'
@@ -733,12 +751,6 @@ def generate_report():
 
     # Add report title
     report_content.append(Paragraph(f"Report for {selected_dataset}", styles['Title']))
-
-    # Add selected dataset, sheet, and statistics
-    # report_content.append(Paragraph(f"<strong>Selected Dataset:</strong> {selected_dataset}", styles['Normal']))
-    # report_content.append(Paragraph(f"<strong>Selected Sheet:</strong> {selected_sheet}", styles['Normal']))
-    # report_content.append(Paragraph(f"<strong>Selected Statistics:</strong> {', '.join(selected_statistics)}", styles['Normal']))
-    # report_content.append(Paragraph(f" ", styles['Normal']))
 
     # Add statistics table
     table_data = [["Column"] + selected_statistics]

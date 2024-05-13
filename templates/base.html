@@ -38,17 +38,17 @@
 </head>
 <!--Top navigation bar for SociaLens logo and the Breadcrumbs for position awareness-->
 <div class="top-bar d-flex justify-content-between align-items-center" style="height: 60px;">
-    <h3 class="header-title">
-        Socia<span class="lens">Lens</span> <span class="version">βv5</span> 
-    </h3>
-    <div class="breadcrumbs"> 
-        {% for label, url in breadcrumbs %}
+    <div class="breadcrumbs" style="margin-right: 20px;">
+        <h3 class="header-title" style="margin-right: 20px;">
+        Socia<span class="lens">Lens</span> <span class="version">β</span>
+        </h3>
+            {% for label, url in breadcrumbs %}
             <a href="{{ url }}" class="breadcrumb-link">{{ label }}</a>
             {% if not loop.last %} &gt; {% endif %}
         {% endfor %}
     </div>
-    <label class="check"> <input type="checkbox"> 
-        <span>🌙</span> </label>
+    <label class="check"> <input type="checkbox">
+    🌙 </label>
 </div>
 <!--Side menu bar-->
 <div class="wrapper">

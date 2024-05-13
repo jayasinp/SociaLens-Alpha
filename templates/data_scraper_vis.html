@@ -1,45 +1,43 @@
-{% extends "base.html" %}
+<!-- data_scraper_vis.html -->
 
 {% block content %}
-
 <div class="main-content-container">
-    <h3>Network Visualization for <a href="{{ url }}">{{ url }}</a></h3>
+    <h1>{{ page_title }}</h1>
+    <h4>Total Links Found: {{ links|length }}</h4>
     <div class="alert alert-info" role="alert">
         🕵️ The scraped data has been saved as JSON!
     </div>
-    <div id="cy" style="height: 80vh; width: 100%;"></div>
+    <div id="cy" style="height: 80vh; width: 100%; background-color: white;"></div>
 </div>
 
 <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 <script>
-    const url = '{{ url }}'; // Get the URL from the Flask template
-    console.log("Requesting JSON for URL:", url); // Log the URL for debugging
-    fetch('/network.json?url=' + encodeURIComponent(url))
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Data received:", data); // Log data to see the structure
-            var cy = cytoscape({
-                container: document.getElementById('cy'),
-                elements: data,
-                style: [
-                    { selector: 'node', style: {'background-color': '#666', 'label': 'data(label)'} },
-                    { selector: 'edge', style: {'width': 3, 'line-color': '#ccc'} }
-                ],
-                layout: {
-                    name: 'cose',
-                    fit: true, // Make sure the graph fits in the viewport on load
-                    padding: 10 // Add some padding to keep nodes from touching the edges
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/network.json?url=' + encodeURIComponent('{{ url }}'))
+    .then(response => response.json())
+    .then(data => {
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: data.elements,
+            style: [
+                { selector: 'node[origin="true"]', style: {'background-color': 'red', 'label': 'data(label)', 'color': 'white', 'text-outline-width': 2, 'text-outline-color': 'red'} },
+                { selector: 'node[origin="false"]', style: {'background-color': '#666', 'label': 'data(label)'} },
+                { selector: 'edge', style: {'width': 3, 'line-color': '#ccc'} }
+            ],
+            layout: {
+                name: 'concentric',
+                fit: true,
+                padding: 10,
+                concentric: function(node) {
+                    return node.data('origin') ? 2 : 1;
+                },
+                levelWidth: function(nodes) {
+                    return nodes.maxDegree() / 2;
                 }
-            });
-        })
-        .catch(error => {
-            console.error('Error loading the network data:', error); // Log errors
+            }
         });
+    })
+    .catch(error => console.error('Error loading the network data:', error));
+});
 </script>
-
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Data Upload{% endblock %}
+{% block title %}Network Visualiser{% endblock %}
 
 {% block content %}
 
@@ -319,6 +319,21 @@ selectField.on("change", function() {
     // Update the options in the group selection dropdown based on the new groups
     let selectGroup = d3.select("#selectGroup");
     selectGroup.selectAll("option").remove(); // Remove existing options
+    // Sort the groups alphabetically or numerically
+        groups.sort((a, b) => {
+            // Convert strings to lowercase for case-insensitive sorting
+            a = a.toLowerCase();
+            b = b.toLowerCase();
+            // Check if both strings are numeric
+            const isNumeric = /^\d+$/.test(a) && /^\d+$/.test(b);
+            if (isNumeric) {
+                // If both are numeric, compare as numbers
+                return parseFloat(a) - parseFloat(b);
+            } else {
+                // Otherwise, compare as strings
+                return a.localeCompare(b);
+            }
+        });
     selectGroup.selectAll("option")
         .data(groups)
         .enter()
